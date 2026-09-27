@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['card-corner']
+
+roboflow:
+  workspace: julian-segundo-blanco
+  project: dataset-b-5f2kh
+  version: 1
+  license: Private
+  url: https://app.roboflow.com/julian-segundo-blanco/dataset-b-5f2kh/1
