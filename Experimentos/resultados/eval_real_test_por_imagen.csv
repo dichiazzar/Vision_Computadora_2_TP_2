@@ -1,0 +1,177 @@
+config,imagen,variante,gt,pred,cartas_ok,puntaje_ok
+A,0b833f17-20240703_210929.jpg,original,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: 7 6 = 13 | Jugador: 7 7 7 J = 31,False,False
+A,eb3e3d49-20240703_211304.jpg,original,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: 3 = 3 | Jugador: 8 2 = 10,False,False
+A,ecd4f533-20240703_210248.jpg,original,Casa: 3 = 3 | Jugador: - = 0,Casa: 3 = 3 | Jugador: 2 = 2,False,False
+A,ed04ca62-20240703_213607.jpg,original,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+A,f174d90e-20240703_213749.jpg,original,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+A,f24e7e9c-20240703_210316.jpg,original,Casa: J = 10 | Jugador: J = 10,Casa: J = 10 | Jugador: - = 0,False,False
+A,f4180d27-20240703_211412.jpg,original,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+A,f6a0b336-20240703_213546.jpg,original,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A 4 = 15,False,False
+A,f9e51764-20240703_213535.jpg,original,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,True,True
+A,fc1f356c-20240703_213656.jpg,original,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+A,ff7051b4-20240703_210336.jpg,original,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 4 = 4 | Jugador: 4 4 4 = 12,True,True
+A,0b833f17-20240703_210929.jpg,rot90,Casa: 6 6 4 4 = 20 | Jugador: 7 7 7 7 = 28,Casa: 4 = 4 | Jugador: 7 7 = 14,False,False
+A,eb3e3d49-20240703_211304.jpg,rot90,Casa: 3 3 8 = 14 | Jugador: - = 0,Casa: 3 8 2 = 13 | Jugador: - = 0,False,False
+A,ecd4f533-20240703_210248.jpg,rot90,Casa: - = 0 | Jugador: 3 = 3,Casa: 3 = 3 | Jugador: - = 0,False,False
+A,ed04ca62-20240703_213607.jpg,rot90,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: - = 0,True,True
+A,f174d90e-20240703_213749.jpg,rot90,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: - = 0 | Jugador: - = 0,False,False
+A,f24e7e9c-20240703_210316.jpg,rot90,Casa: - = 0 | Jugador: J J = 20,Casa: J = 10 | Jugador: - = 0,False,False
+A,f4180d27-20240703_211412.jpg,rot90,Casa: A = 11 | Jugador: A = 11,Casa: A = 11 | Jugador: - = 0,False,False
+A,f6a0b336-20240703_213546.jpg,rot90,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+A,f9e51764-20240703_213535.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 7 = 14 | Jugador: 7 10 = 17,False,False
+A,fc1f356c-20240703_213656.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+A,ff7051b4-20240703_210336.jpg,rot90,Casa: 4 4 = 8 | Jugador: 4 4 = 8,Casa: 4 4 = 8 | Jugador: 4 4 = 8,True,True
+A,0b833f17-20240703_210929.jpg,rot180,Casa: 6 4 7 7 7 = 31 | Jugador: 6 4 7 = 17,Casa: 7 7 A 7 = 22 | Jugador: 7 A = 18,False,False
+A,eb3e3d49-20240703_211304.jpg,rot180,Casa: 3 8 = 11 | Jugador: 3 = 3,Casa: 8 2 = 10 | Jugador: 3 = 3,False,False
+A,ecd4f533-20240703_210248.jpg,rot180,Casa: - = 0 | Jugador: 3 = 3,Casa: 2 = 2 | Jugador: 3 = 3,False,False
+A,ed04ca62-20240703_213607.jpg,rot180,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 10 = 20 | Jugador: - = 0,False,False
+A,f174d90e-20240703_213749.jpg,rot180,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: - = 0 | Jugador: - = 0,False,False
+A,f24e7e9c-20240703_210316.jpg,rot180,Casa: J = 10 | Jugador: J = 10,Casa: - = 0 | Jugador: - = 0,False,False
+A,f4180d27-20240703_211412.jpg,rot180,Casa: A A = 12 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+A,f6a0b336-20240703_213546.jpg,rot180,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+A,f9e51764-20240703_213535.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 = 7 | Jugador: 7 = 7,False,False
+A,fc1f356c-20240703_213656.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,False,False
+A,ff7051b4-20240703_210336.jpg,rot180,Casa: 4 4 4 = 12 | Jugador: 4 = 4,Casa: 4 4 = 8 | Jugador: 4 = 4,False,False
+A,0b833f17-20240703_210929.jpg,escala50,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: - = 0 | Jugador: - = 0,False,False
+A,eb3e3d49-20240703_211304.jpg,escala50,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: - = 0 | Jugador: 2 = 2,False,False
+A,ecd4f533-20240703_210248.jpg,escala50,Casa: 3 = 3 | Jugador: - = 0,Casa: - = 0 | Jugador: 3 = 3,False,False
+A,ed04ca62-20240703_213607.jpg,escala50,Casa: - = 0 | Jugador: 10 = 10,Casa: 10 = 10 | Jugador: - = 0,False,False
+A,f174d90e-20240703_213749.jpg,escala50,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+A,f24e7e9c-20240703_210316.jpg,escala50,Casa: J = 10 | Jugador: J = 10,Casa: - = 0 | Jugador: - = 0,False,False
+A,f4180d27-20240703_211412.jpg,escala50,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+A,f6a0b336-20240703_213546.jpg,escala50,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+A,f9e51764-20240703_213535.jpg,escala50,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+A,fc1f356c-20240703_213656.jpg,escala50,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,False,False
+A,ff7051b4-20240703_210336.jpg,escala50,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: - = 0 | Jugador: 4 A = 15,False,False
+B,0b833f17-20240703_210929.jpg,original,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: 6 7 = 13 | Jugador: 6 7 7 7 = 27,False,False
+B,eb3e3d49-20240703_211304.jpg,original,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: 3 = 3 | Jugador: 3 8 = 11,True,True
+B,ecd4f533-20240703_210248.jpg,original,Casa: 3 = 3 | Jugador: - = 0,Casa: J = 10 | Jugador: - = 0,False,False
+B,ed04ca62-20240703_213607.jpg,original,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+B,f174d90e-20240703_213749.jpg,original,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+B,f24e7e9c-20240703_210316.jpg,original,Casa: J = 10 | Jugador: J = 10,Casa: - = 0 | Jugador: - = 0,False,False
+B,f4180d27-20240703_211412.jpg,original,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+B,f6a0b336-20240703_213546.jpg,original,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+B,f9e51764-20240703_213535.jpg,original,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B,fc1f356c-20240703_213656.jpg,original,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B,ff7051b4-20240703_210336.jpg,original,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 4 = 4 | Jugador: 4 4 4 = 12,True,True
+B,0b833f17-20240703_210929.jpg,rot90,Casa: 6 6 4 4 = 20 | Jugador: 7 7 7 7 = 28,Casa: - = 0 | Jugador: 7 7 7 7 7 = 35,False,False
+B,eb3e3d49-20240703_211304.jpg,rot90,Casa: 3 3 8 = 14 | Jugador: - = 0,Casa: 3 3 = 6 | Jugador: - = 0,False,False
+B,ecd4f533-20240703_210248.jpg,rot90,Casa: - = 0 | Jugador: 3 = 3,Casa: 3 = 3 | Jugador: A = 11,False,False
+B,ed04ca62-20240703_213607.jpg,rot90,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: 10 = 10,False,False
+B,f174d90e-20240703_213749.jpg,rot90,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: - = 0 | Jugador: - = 0,False,False
+B,f24e7e9c-20240703_210316.jpg,rot90,Casa: - = 0 | Jugador: J J = 20,Casa: - = 0 | Jugador: - = 0,False,False
+B,f4180d27-20240703_211412.jpg,rot90,Casa: A = 11 | Jugador: A = 11,Casa: A = 11 | Jugador: - = 0,False,False
+B,f6a0b336-20240703_213546.jpg,rot90,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+B,f9e51764-20240703_213535.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 = 7 | Jugador: - = 0,False,False
+B,fc1f356c-20240703_213656.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B,ff7051b4-20240703_210336.jpg,rot90,Casa: 4 4 = 8 | Jugador: 4 4 = 8,Casa: 4 4 = 8 | Jugador: 4 4 = 8,True,True
+B,0b833f17-20240703_210929.jpg,rot180,Casa: 6 4 7 7 7 = 31 | Jugador: 6 4 7 = 17,Casa: 7 7 7 6 4 = 31 | Jugador: Q 7 = 17,False,True
+B,eb3e3d49-20240703_211304.jpg,rot180,Casa: 3 8 = 11 | Jugador: 3 = 3,Casa: 8 3 = 11 | Jugador: 3 8 = 11,False,False
+B,ecd4f533-20240703_210248.jpg,rot180,Casa: - = 0 | Jugador: 3 = 3,Casa: J = 10 | Jugador: 7 = 7,False,False
+B,ed04ca62-20240703_213607.jpg,rot180,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: - = 0,True,True
+B,f174d90e-20240703_213749.jpg,rot180,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: - = 0 | Jugador: - = 0,False,False
+B,f24e7e9c-20240703_210316.jpg,rot180,Casa: J = 10 | Jugador: J = 10,Casa: - = 0 | Jugador: - = 0,False,False
+B,f4180d27-20240703_211412.jpg,rot180,Casa: A A = 12 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+B,f6a0b336-20240703_213546.jpg,rot180,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+B,f9e51764-20240703_213535.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 = 7 | Jugador: 7 = 7,False,False
+B,fc1f356c-20240703_213656.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,False,False
+B,ff7051b4-20240703_210336.jpg,rot180,Casa: 4 4 4 = 12 | Jugador: 4 = 4,Casa: 4 4 4 = 12 | Jugador: 4 = 4,True,True
+B,0b833f17-20240703_210929.jpg,escala50,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: J K = 20 | Jugador: 7 7 K = 24,False,False
+B,eb3e3d49-20240703_211304.jpg,escala50,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: - = 0 | Jugador: - = 0,False,False
+B,ecd4f533-20240703_210248.jpg,escala50,Casa: 3 = 3 | Jugador: - = 0,Casa: 7 = 7 | Jugador: A = 11,False,False
+B,ed04ca62-20240703_213607.jpg,escala50,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+B,f174d90e-20240703_213749.jpg,escala50,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+B,f24e7e9c-20240703_210316.jpg,escala50,Casa: J = 10 | Jugador: J = 10,Casa: - = 0 | Jugador: - = 0,False,False
+B,f4180d27-20240703_211412.jpg,escala50,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+B,f6a0b336-20240703_213546.jpg,escala50,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+B,f9e51764-20240703_213535.jpg,escala50,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B,fc1f356c-20240703_213656.jpg,escala50,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B,ff7051b4-20240703_210336.jpg,escala50,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 7 = 7 | Jugador: K 7 7 = 24,False,False
+A_ft,0b833f17-20240703_210929.jpg,original,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: 7 4 6 = 17 | Jugador: 7 7 7 6 4 = 31,True,True
+A_ft,eb3e3d49-20240703_211304.jpg,original,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: 3 = 3 | Jugador: 8 2 = 10,False,False
+A_ft,ecd4f533-20240703_210248.jpg,original,Casa: 3 = 3 | Jugador: - = 0,Casa: 3 = 3 | Jugador: - = 0,True,True
+A_ft,ed04ca62-20240703_213607.jpg,original,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+A_ft,f174d90e-20240703_213749.jpg,original,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+A_ft,f24e7e9c-20240703_210316.jpg,original,Casa: J = 10 | Jugador: J = 10,Casa: J = 10 | Jugador: J J = 20,False,False
+A_ft,f4180d27-20240703_211412.jpg,original,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+A_ft,f6a0b336-20240703_213546.jpg,original,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+A_ft,f9e51764-20240703_213535.jpg,original,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,True,True
+A_ft,fc1f356c-20240703_213656.jpg,original,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+A_ft,ff7051b4-20240703_210336.jpg,original,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 4 = 4 | Jugador: 4 4 4 = 12,True,True
+A_ft,0b833f17-20240703_210929.jpg,rot90,Casa: 6 6 4 4 = 20 | Jugador: 7 7 7 7 = 28,Casa: 4 4 6 6 = 20 | Jugador: 7 7 7 7 = 28,True,True
+A_ft,eb3e3d49-20240703_211304.jpg,rot90,Casa: 3 3 8 = 14 | Jugador: - = 0,Casa: 8 3 2 = 13 | Jugador: - = 0,False,False
+A_ft,ecd4f533-20240703_210248.jpg,rot90,Casa: - = 0 | Jugador: 3 = 3,Casa: - = 0 | Jugador: 3 = 3,True,True
+A_ft,ed04ca62-20240703_213607.jpg,rot90,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: - = 0,True,True
+A_ft,f174d90e-20240703_213749.jpg,rot90,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: - = 0 | Jugador: - = 0,False,False
+A_ft,f24e7e9c-20240703_210316.jpg,rot90,Casa: - = 0 | Jugador: J J = 20,Casa: J = 10 | Jugador: J J J = 30,False,False
+A_ft,f4180d27-20240703_211412.jpg,rot90,Casa: A = 11 | Jugador: A = 11,Casa: A = 11 | Jugador: - = 0,False,False
+A_ft,f6a0b336-20240703_213546.jpg,rot90,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+A_ft,f9e51764-20240703_213535.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 7 = 14 | Jugador: 7 = 7,True,True
+A_ft,fc1f356c-20240703_213656.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+A_ft,ff7051b4-20240703_210336.jpg,rot90,Casa: 4 4 = 8 | Jugador: 4 4 = 8,Casa: 4 4 = 8 | Jugador: 4 = 4,False,False
+A_ft,0b833f17-20240703_210929.jpg,rot180,Casa: 6 4 7 7 7 = 31 | Jugador: 6 4 7 = 17,Casa: 7 7 7 6 4 = 31 | Jugador: 7 6 A = 14,False,False
+A_ft,eb3e3d49-20240703_211304.jpg,rot180,Casa: 3 8 = 11 | Jugador: 3 = 3,Casa: 8 3 = 11 | Jugador: 3 = 3,True,True
+A_ft,ecd4f533-20240703_210248.jpg,rot180,Casa: - = 0 | Jugador: 3 = 3,Casa: - = 0 | Jugador: 3 = 3,True,True
+A_ft,ed04ca62-20240703_213607.jpg,rot180,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: - = 0,True,True
+A_ft,f174d90e-20240703_213749.jpg,rot180,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: - = 0 | Jugador: - = 0,False,False
+A_ft,f24e7e9c-20240703_210316.jpg,rot180,Casa: J = 10 | Jugador: J = 10,Casa: J J = 20 | Jugador: - = 0,False,False
+A_ft,f4180d27-20240703_211412.jpg,rot180,Casa: A A = 12 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+A_ft,f6a0b336-20240703_213546.jpg,rot180,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: - = 0,True,True
+A_ft,f9e51764-20240703_213535.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 7 = 14 | Jugador: 7 = 7,True,True
+A_ft,fc1f356c-20240703_213656.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,False,False
+A_ft,ff7051b4-20240703_210336.jpg,rot180,Casa: 4 4 4 = 12 | Jugador: 4 = 4,Casa: 4 4 4 = 12 | Jugador: 4 = 4,True,True
+A_ft,0b833f17-20240703_210929.jpg,escala50,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: - = 0 | Jugador: 7 7 4 = 18,False,False
+A_ft,eb3e3d49-20240703_211304.jpg,escala50,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: 2 = 2 | Jugador: 2 8 = 10,False,False
+A_ft,ecd4f533-20240703_210248.jpg,escala50,Casa: 3 = 3 | Jugador: - = 0,Casa: 3 = 3 | Jugador: - = 0,True,True
+A_ft,ed04ca62-20240703_213607.jpg,escala50,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+A_ft,f174d90e-20240703_213749.jpg,escala50,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+A_ft,f24e7e9c-20240703_210316.jpg,escala50,Casa: J = 10 | Jugador: J = 10,Casa: J J = 20 | Jugador: J J = 20,False,False
+A_ft,f4180d27-20240703_211412.jpg,escala50,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+A_ft,f6a0b336-20240703_213546.jpg,escala50,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+A_ft,f9e51764-20240703_213535.jpg,escala50,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,True,True
+A_ft,fc1f356c-20240703_213656.jpg,escala50,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+A_ft,ff7051b4-20240703_210336.jpg,escala50,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 4 = 4 | Jugador: 4 4 4 = 12,True,True
+B_ft,0b833f17-20240703_210929.jpg,original,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: 6 7 4 = 17 | Jugador: 6 7 7 7 4 = 31,True,True
+B_ft,eb3e3d49-20240703_211304.jpg,original,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: 3 = 3 | Jugador: 3 8 = 11,True,True
+B_ft,ecd4f533-20240703_210248.jpg,original,Casa: 3 = 3 | Jugador: - = 0,Casa: 2 = 2 | Jugador: - = 0,False,False
+B_ft,ed04ca62-20240703_213607.jpg,original,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+B_ft,f174d90e-20240703_213749.jpg,original,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: 2 2 = 4 | Jugador: 4 = 4,False,False
+B_ft,f24e7e9c-20240703_210316.jpg,original,Casa: J = 10 | Jugador: J = 10,Casa: J J = 20 | Jugador: J = 10,False,False
+B_ft,f4180d27-20240703_211412.jpg,original,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+B_ft,f6a0b336-20240703_213546.jpg,original,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+B_ft,f9e51764-20240703_213535.jpg,original,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,True,True
+B_ft,fc1f356c-20240703_213656.jpg,original,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B_ft,ff7051b4-20240703_210336.jpg,original,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 7 = 7 | Jugador: 4 4 4 = 12,False,False
+B_ft,0b833f17-20240703_210929.jpg,rot90,Casa: 6 6 4 4 = 20 | Jugador: 7 7 7 7 = 28,Casa: 6 6 4 4 = 20 | Jugador: 7 7 7 7 = 28,True,True
+B_ft,eb3e3d49-20240703_211304.jpg,rot90,Casa: 3 3 8 = 14 | Jugador: - = 0,Casa: 3 3 8 = 14 | Jugador: - = 0,True,True
+B_ft,ecd4f533-20240703_210248.jpg,rot90,Casa: - = 0 | Jugador: 3 = 3,Casa: - = 0 | Jugador: 3 = 3,True,True
+B_ft,ed04ca62-20240703_213607.jpg,rot90,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: 10 = 10,False,False
+B_ft,f174d90e-20240703_213749.jpg,rot90,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: 2 = 2 | Jugador: 2 3 = 5,False,False
+B_ft,f24e7e9c-20240703_210316.jpg,rot90,Casa: - = 0 | Jugador: J J = 20,Casa: J = 10 | Jugador: - = 0,False,False
+B_ft,f4180d27-20240703_211412.jpg,rot90,Casa: A = 11 | Jugador: A = 11,Casa: A = 11 | Jugador: - = 0,False,False
+B_ft,f6a0b336-20240703_213546.jpg,rot90,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: 2 = 2,False,False
+B_ft,f9e51764-20240703_213535.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 = 7 | Jugador: 7 = 7,False,False
+B_ft,fc1f356c-20240703_213656.jpg,rot90,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B_ft,ff7051b4-20240703_210336.jpg,rot90,Casa: 4 4 = 8 | Jugador: 4 4 = 8,Casa: 4 4 = 8 | Jugador: 4 4 = 8,True,True
+B_ft,0b833f17-20240703_210929.jpg,rot180,Casa: 6 4 7 7 7 = 31 | Jugador: 6 4 7 = 17,Casa: 7 6 7 4 7 = 31 | Jugador: 6 7 4 = 17,True,True
+B_ft,eb3e3d49-20240703_211304.jpg,rot180,Casa: 3 8 = 11 | Jugador: 3 = 3,Casa: 3 8 = 11 | Jugador: 3 = 3,True,True
+B_ft,ecd4f533-20240703_210248.jpg,rot180,Casa: - = 0 | Jugador: 3 = 3,Casa: 2 = 2 | Jugador: A = 11,False,False
+B_ft,ed04ca62-20240703_213607.jpg,rot180,Casa: 10 = 10 | Jugador: - = 0,Casa: 10 = 10 | Jugador: - = 0,True,True
+B_ft,f174d90e-20240703_213749.jpg,rot180,Casa: 6 = 6 | Jugador: 6 6 6 = 18,Casa: 4 = 4 | Jugador: 2 2 4 = 8,False,False
+B_ft,f24e7e9c-20240703_210316.jpg,rot180,Casa: J = 10 | Jugador: J = 10,Casa: J J = 20 | Jugador: J J = 20,False,False
+B_ft,f4180d27-20240703_211412.jpg,rot180,Casa: A A = 12 | Jugador: - = 0,Casa: A = 11 | Jugador: - = 0,False,False
+B_ft,f6a0b336-20240703_213546.jpg,rot180,Casa: - = 0 | Jugador: - = 0,Casa: A = 11 | Jugador: J = 10,False,False
+B_ft,f9e51764-20240703_213535.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 = 7,Casa: 7 = 7 | Jugador: 7 = 7,False,False
+B_ft,fc1f356c-20240703_213656.jpg,rot180,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,False,False
+B_ft,ff7051b4-20240703_210336.jpg,rot180,Casa: 4 4 4 = 12 | Jugador: 4 = 4,Casa: 4 4 4 = 12 | Jugador: 4 = 4,True,True
+B_ft,0b833f17-20240703_210929.jpg,escala50,Casa: 6 4 7 = 17 | Jugador: 6 4 7 7 7 = 31,Casa: J 4 = 14 | Jugador: 5 4 4 4 = 17,False,False
+B_ft,eb3e3d49-20240703_211304.jpg,escala50,Casa: 3 = 3 | Jugador: 3 8 = 11,Casa: 4 = 4 | Jugador: A A = 12,False,False
+B_ft,ecd4f533-20240703_210248.jpg,escala50,Casa: 3 = 3 | Jugador: - = 0,Casa: A = 11 | Jugador: 2 = 2,False,False
+B_ft,ed04ca62-20240703_213607.jpg,escala50,Casa: - = 0 | Jugador: 10 = 10,Casa: - = 0 | Jugador: 10 = 10,True,True
+B_ft,f174d90e-20240703_213749.jpg,escala50,Casa: 6 6 6 = 18 | Jugador: 6 = 6,Casa: - = 0 | Jugador: - = 0,False,False
+B_ft,f24e7e9c-20240703_210316.jpg,escala50,Casa: J = 10 | Jugador: J = 10,Casa: 7 J = 17 | Jugador: J J = 20,False,False
+B_ft,f4180d27-20240703_211412.jpg,escala50,Casa: - = 0 | Jugador: A A = 12,Casa: - = 0 | Jugador: A = 11,False,False
+B_ft,f6a0b336-20240703_213546.jpg,escala50,Casa: - = 0 | Jugador: - = 0,Casa: - = 0 | Jugador: A = 11,False,False
+B_ft,f9e51764-20240703_213535.jpg,escala50,Casa: 7 = 7 | Jugador: 7 7 = 14,Casa: 7 = 7 | Jugador: 7 7 = 14,True,True
+B_ft,fc1f356c-20240703_213656.jpg,escala50,Casa: 7 7 = 14 | Jugador: 7 7 = 14,Casa: 7 7 = 14 | Jugador: 7 = 7,False,False
+B_ft,ff7051b4-20240703_210336.jpg,escala50,Casa: 4 = 4 | Jugador: 4 4 4 = 12,Casa: 7 = 7 | Jugador: A 4 4 = 19,False,False

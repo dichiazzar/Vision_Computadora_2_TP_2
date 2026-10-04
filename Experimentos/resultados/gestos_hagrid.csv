@@ -1,0 +1,7 @@
+metodo,rotacion,recall_APUNTAR,precision_APUNTAR,recall_PALMA,precision_PALMA,falsos_disparos,sin_mano
+reglas,original,0.800,0.941,0.892,0.817,0.100,0.092
+reglas,rot90,0.775,0.939,0.917,0.827,0.104,0.100
+reglas,rot180,0.825,0.971,0.908,0.838,0.092,0.095
+mp,original,0.800,0.970,0.517,1.000,0.004,0.092
+mp,rot90,0.000,0.000,0.000,0.000,0.000,0.100
+mp,rot180,0.000,0.000,0.000,0.000,0.017,0.095

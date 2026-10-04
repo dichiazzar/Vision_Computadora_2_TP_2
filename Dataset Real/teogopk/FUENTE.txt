@@ -1,0 +1,5 @@
+Dataset real de cartas (sólo corazones, 13 valores), fotos tomadas y etiquetadas por Teodor Kostadinov.
+Fuente: https://github.com/TeogopK/Playing-Cards-Object-Detection  (carpeta data/real_dataset)
+Licencia: CC0 1.0 (dominio público)
+98 imágenes 416x416 en formato YOLO: 69 train / 18 valid / 11 test (split original del autor, sin cambios).
+Clases: 10h, 2h, ..., Qh  -> se normalizan al valor (10, 2, ..., Q) con Experimentos/clases.py

@@ -1,0 +1,14 @@
+clase,movimiento,esperado,clips,acierto,PEDIR,PLANTARSE,nada
+one,quieta,PEDIR,15,0.267,4,0,11
+palm,barrido,PLANTARSE,15,0.867,0,13,2
+stop,barrido,PLANTARSE,15,0.867,0,13,2
+four,barrido,PLANTARSE,15,0.733,0,11,4
+palm,quieta,PLANTARSE,15,0.867,0,13,2
+fist,quieta,nada,15,1.000,0,0,15
+like,quieta,nada,15,0.933,0,1,14
+dislike,quieta,nada,15,0.933,0,1,14
+peace,quieta,nada,15,1.000,0,0,15
+call,quieta,nada,15,0.867,0,2,13
+three,quieta,nada,15,1.000,0,0,15
+fist,barrido,nada,15,1.000,0,0,15
+peace,barrido,nada,15,0.933,0,1,14

@@ -1,0 +1,36 @@
+{
+  "best_epoch": 3,
+  "val_acc": 1.0,
+  "test_acc": 1.0,
+  "test_macro_f1": 1.0,
+  "test_f1_por_clase": {
+    "10": 1.0,
+    "2": 1.0,
+    "3": 1.0,
+    "4": 1.0,
+    "5": 1.0,
+    "6": 1.0,
+    "7": 1.0,
+    "8": 1.0,
+    "9": 1.0,
+    "A": 1.0,
+    "J": 1.0,
+    "K": 1.0,
+    "Q": 1.0
+  },
+  "latencia_ms_batch1": 13.483285999973305,
+  "device": "cpu",
+  "epocas_entrenadas": 7,
+  "train_min": 30.00962776740392,
+  "args": {
+    "epochs": 12,
+    "img_size": 96,
+    "batch": 128,
+    "lr": 0.001,
+    "patience": 4,
+    "workers": 4,
+    "seed": 0,
+    "run": "cnn13-resnet18",
+    "eval_only": true
+  }
+}

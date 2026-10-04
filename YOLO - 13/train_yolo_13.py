@@ -1,10 +1,13 @@
 from pathlib import Path
+
+import torch
 from ultralytics import YOLO
 
+# Carpeta de este script: las rutas no dependen de desde dónde se lo ejecute
+HERE = Path(__file__).resolve().parent
+
 # Ruta al dataset
-DATASET_PATH = Path(
-    "Dataset YOLO 13/data.yaml"
-)
+DATASET_PATH = HERE / "Dataset YOLO 13" / "data.yaml"
 
 # Modelo preentrenado
 MODEL_NAME = "yolo11s.pt"
@@ -19,8 +22,13 @@ IMAGE_SIZE = 640
 BATCH_SIZE = 16
 PATIENCE = 15
 
-# Apple Silicon GPU
-DEVICE = "mps"
+# GPU NVIDIA (cuda), Apple Silicon (mps) o CPU, según lo que haya
+if torch.cuda.is_available():
+    DEVICE = 0
+elif torch.backends.mps.is_available():
+    DEVICE = "mps"
+else:
+    DEVICE = "cpu"
 
 
 if not DATASET_PATH.exists():
@@ -47,7 +55,6 @@ print("=" * 60)
 
 model = YOLO(MODEL_NAME)
 
-print("llego")
 results = model.train(
     # Dataset
     data=str(DATASET_PATH),
@@ -64,8 +71,8 @@ results = model.train(
     # Optimización
     optimizer="auto",
 
-    # Output / W&B
-    project=PROJECT_NAME,
+    # Output: <carpeta del script>/runs/detect/blackjack-cv/<RUN_NAME>
+    project=str(HERE / "runs" / "detect" / PROJECT_NAME),
     name=RUN_NAME,
 
     # Guardar checkpoints
@@ -85,5 +92,5 @@ print(results)
 
 print(
     f"\nBuscá el checkpoint best.pt dentro de "
-    f"{PROJECT_NAME}/{RUN_NAME}/weights/"
+    f"{HERE / 'runs' / 'detect' / PROJECT_NAME / RUN_NAME / 'weights'}"
 )

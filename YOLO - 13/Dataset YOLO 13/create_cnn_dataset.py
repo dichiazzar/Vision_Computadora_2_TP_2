@@ -10,8 +10,8 @@ from collections import defaultdict
 # El script debe estar dentro de la carpeta del dataset YOLO
 YOLO_DATASET = Path(__file__).resolve().parent
 
-# Dataset nuevo
-CNN_DATASET = YOLO_DATASET.parent / "CNN-13"
+# Dataset nuevo: <repo>/CNN - 13/Dataset CNN-13 (donde lo usa CNN - 13/train_cnn_13.py)
+CNN_DATASET = YOLO_DATASET.parent.parent / "CNN - 13" / "Dataset CNN-13"
 
 # Padding alrededor de cada bounding box.
 # 0.10 = agregar 10% del ancho/alto de la bbox a cada lado.

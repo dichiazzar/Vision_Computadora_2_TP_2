@@ -1,0 +1,23 @@
+# Python 3.12. Versiones con las que se probó el proyecto.
+# PyTorch: para GPU NVIDIA instalar la build con CUDA desde https://pytorch.org (en Mac, la estándar ya usa MPS).
+ultralytics==8.4.163
+torch==2.13.0
+torchvision==0.28.0
+opencv-python==5.0.0.93      # NO instalar también opencv-python-headless ni -contrib: pisan cv2 y rompen las ventanas
+numpy==2.3.5
+pandas==3.0.5
+pillow==12.3.0
+PyYAML==6.0.3
+matplotlib==3.11.1
+lap==0.5.13                  # asociación de ByteTrack (seguimiento)
+roboflow==1.5.1              # sólo para descargar los datasets de Roboflow
+pytest==9.1.1                # tests (python -m pytest tests)
+imageio-ffmpeg==0.6.0        # trae ffmpeg: los videos grabados se convierten a H.264 (WhatsApp, PowerPoint)
+
+# Gestos de la mano (MediaPipe). mediapipe pide opencv-contrib-python, que choca con opencv-python, así que se
+# instala SIN dependencias en un segundo paso (ver README):
+#   pip install --no-deps mediapipe==1.0.1
+absl-py
+flatbuffers
+sounddevice
+cffi

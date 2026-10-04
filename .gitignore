@@ -1,0 +1,28 @@
+# ---------------------------------------------------------------- Python / sistema
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.DS_Store
+Thumbs.db
+
+# ---------------------------------------------------------------- generados por ultralytics / entrenamiento
+*.cache
+yolo11*.pt
+**/weights/last.pt
+
+# ---------------------------------------------------------------- videos (se generan con los scripts o con --guardar)
+*.mp4
+videos/
+
+# ---------------------------------------------------------------- datos que se bajan o regeneran solos (ver README)
+Gestos/modelos/
+Gestos/datos_hagrid/
+Experimentos/finetune_data/
+CNN - 13/Dataset CNN-13-real/
+Dataset Real/fotos/
+Dataset Real/para_roboflow/
+
+# ---------------------------------------------------------------- logs
+*_log.txt
+CNN - 13/runs/train_log.txt

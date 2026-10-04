@@ -1,0 +1,17 @@
+pipeline,video,seguimiento,cuadros,mano_correcta,cambios_de_mano
+A,prueba.mp4,False,150,0.6067,58
+A,prueba.mp4,True,150,0.9,3
+A,ACES.mp4,False,150,0.7,45
+A,ACES.mp4,True,150,0.9067,2
+A,aces_torcidos.mp4,False,150,0.62,52
+A,aces_torcidos.mp4,True,150,0.8067,8
+A,ACES_TAPADOS.mp4,False,150,0.0933,34
+A,ACES_TAPADOS.mp4,True,150,0.4333,4
+B,prueba.mp4,False,150,0.6,44
+B,prueba.mp4,True,150,0.8,8
+B,ACES.mp4,False,150,0.2267,91
+B,ACES.mp4,True,150,0.26,19
+B,aces_torcidos.mp4,False,150,0.1333,92
+B,aces_torcidos.mp4,True,150,0.22,24
+B,ACES_TAPADOS.mp4,False,150,0.0,85
+B,ACES_TAPADOS.mp4,True,150,0.1133,19
