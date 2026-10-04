@@ -56,8 +56,8 @@ def convertir_h264(origen, destino, crf=23, fps=None):
 class GrabadorVideo:
     """Como cv2.VideoWriter (método write / release), pero el archivo final queda en H.264."""
 
-    def __init__(self, ruta, fps, tamanio, tiempo_real=False):
-        self.tiempo_real, self.cuadros, self.t0 = tiempo_real, 0, None
+    def __init__(self, ruta, fps, tamanio, tiempo_real=False, crf=23):
+        self.tiempo_real, self.cuadros, self.t0, self.crf = tiempo_real, 0, None, crf
         self.ruta = Path(ruta)
         self.temporal = self.ruta.with_name(self.ruta.stem + "_tmp_mp4v.mp4")
         self.writer = cv2.VideoWriter(str(self.temporal), cv2.VideoWriter_fourcc(*"mp4v"), fps, tamanio)
@@ -73,7 +73,7 @@ class GrabadorVideo:
         fps = None
         if self.tiempo_real and self.cuadros > 1:
             fps = (self.cuadros - 1) / max(time.perf_counter() - self.t0, 1e-3)
-        if convertir_h264(self.temporal, self.ruta, fps=fps):
+        if convertir_h264(self.temporal, self.ruta, crf=self.crf, fps=fps):
             self.temporal.unlink()
             extra = f", {fps:.1f} FPS reales" if fps else ""
             print(f"video guardado (H.264{extra}): {self.ruta}")

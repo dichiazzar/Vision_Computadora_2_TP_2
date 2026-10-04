@@ -156,7 +156,8 @@ python Identificador_Cartas/identificador_cartas.py --camara 0 --conf 0.3 --jueg
    levantar las cartas empieza otra mano. `n` reinicia la mano en curso (conserva el saldo), `r` empieza una
    partida nueva (saldo en 0) y `q` sale.
 
-Con `--guardar partida.mp4` la partida se graba y al salir se convierte a **H.264**, el formato que aceptan
+Con `--guardar-crudo crudo.mp4` se graba además la imagen limpia de la cámara, sin dibujos, para juntar fotos
+de entrenamiento (ver [Dataset Real/README.md](Dataset%20Real/README.md)). Con `--guardar partida.mp4` la partida se graba y al salir se convierte a **H.264**, el formato que aceptan
 WhatsApp, PowerPoint y los navegadores (usa el ffmpeg de `imageio-ffmpeg`). Para convertir un video grabado antes:
 `python Identificador_Cartas/video.py partida.mp4`. Para elegir la cámara, el número se ve con
 `python -c "import cv2; [print(i, cv2.VideoCapture(i).read()[0]) for i in range(4)]"`; con el celular como webcam

@@ -175,6 +175,21 @@ class ControlSenal:
             self.avisado = False
 
 
+def grabar_crudo(grabador, frame, args, cap):
+    """--guardar-crudo: graba la imagen de la cámara TAL CUAL llega (sin cajas, textos ni esqueletos), con más
+    calidad que el video anotado. Sirve para juntar material de entrenamiento con el escenario exacto de la demo
+    (después: python "Dataset Real/extraer_cuadros.py"). Devuelve el grabador (lo crea en el primer cuadro)."""
+    if not args.guardar_crudo:
+        return None
+    if grabador is None:
+        fps = cap.get(cv2.CAP_PROP_FPS) if args.video else 15
+        grabador = GrabadorVideo(args.guardar_crudo, fps or 15, frame.shape[1::-1],
+                                 tiempo_real=args.camara is not None, crf=18)
+        print("grabando la imagen cruda en", args.guardar_crudo)
+    grabador.write(frame)
+    return grabador
+
+
 def parsear_mano(texto_mano):
     """'Q|7 K' -> (('Q',), ('7', 'K')): cartas esperadas de Casa | Jugador."""
     casa, jugador = texto_mano.split("|")
@@ -194,12 +209,13 @@ def modo_video(args, detector):
     stats = dict(cuadros=0, cambios_cuadro=0, cambios_mostrada=0, ok_cuadro=0, ok_mostrada=0)
     previa_cuadro = previa_mostrada = None
 
-    writer, fps, t_prev = None, 0.0, time.perf_counter()
+    writer, crudo, fps, t_prev = None, None, 0.0, time.perf_counter()
     try:
         while True:
             ok, frame = cap.read()
             if not ok or (args.max_cuadros and stats["cuadros"] >= args.max_cuadros):
                 break
+            crudo = grabar_crudo(crudo, frame, args, cap)
             esquinas, diagonales, casa, jugador = analizar(frame, detector, seguimiento)
             mano_cuadro = Seguimiento.clave(casa, jugador)
             if seguimiento is not None:
@@ -244,6 +260,8 @@ def modo_video(args, detector):
         cap.release()
         if writer is not None:
             writer.release()
+        if crudo is not None:
+            crudo.release()
         try:
             cv2.destroyAllWindows()
         except cv2.error:
@@ -277,12 +295,13 @@ def modo_juego(args, detector):
     senal = ControlSenal(activo=args.camara is not None)
     if not cap.isOpened():
         raise RuntimeError(f"No se pudo abrir {fuente!r}")
-    writer, fps, t_prev, tecla = None, 0.0, time.perf_counter(), 255
+    writer, crudo, fps, t_prev, tecla = None, None, 0.0, time.perf_counter(), 255
     try:
         while True:
             ok, frame = cap.read()
             if not ok:
                 break
+            crudo = grabar_crudo(crudo, frame, args, cap)
             gesto = {ord("p"): "PEDIR", ord("l"): "PLANTARSE"}.get(tecla)
             t = time.perf_counter()
             fps = 0.9 * fps + 0.1 / max(t - t_prev, 1e-6) if fps else 1 / max(t - t_prev, 1e-6)
@@ -310,6 +329,8 @@ def modo_juego(args, detector):
         cap.release()
         if writer is not None:
             writer.release()
+        if crudo is not None:
+            crudo.release()
         try:
             cv2.destroyAllWindows()
         except cv2.error:
@@ -332,6 +353,7 @@ def main():
     p.add_argument("--resolucion", default="1280x720", help="cámara: resolución pedida (p. ej. 1920x1080)")
     p.add_argument("--finetune", action="store_true", help="usar los pesos ajustados con fotos reales (teogopk)")
     p.add_argument("--guardar", help="ruta para guardar el resultado (imagen o .mp4)")
+    p.add_argument("--guardar-crudo", help="video/cámara: grabar también la imagen limpia, sin dibujos (.mp4)")
     p.add_argument("--sin-ventana", action="store_true", help="no abrir ventana (sólo imprimir / guardar)")
     p.add_argument("--sin-seguimiento", action="store_true", help="video: procesar cada cuadro por separado")
     p.add_argument("--ventana", type=int, default=15, help="video: cuadros para la votación y la mano mostrada")

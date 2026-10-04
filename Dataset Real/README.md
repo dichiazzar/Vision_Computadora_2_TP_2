@@ -36,6 +36,29 @@ sale inflada. Una sesión es un mismo día, fondo y luz.
 
 Si las fotos están en formato .heic (iPhone), exportarlas como .jpg.
 
+## Opción recomendada: sacar las fotos de video
+En lugar de sacar las fotos una por una, se puede **grabar mientras se juega o se reparte**, con el mismo escenario
+de la demo (cámara, mesa y luz), y extraer cuadros de ahí.
+
+1. Grabar la imagen **cruda**, sin cajas ni textos dibujados, que contaminarían el entrenamiento. Usar una sesión por
+   video, por ejemplo una para train, otra para valid y otra para test, cambiando algo entre sesiones (luz, hora,
+   mantel):
+   ```
+   python Identificador_Cartas/identificador_cartas.py --camara 1 --conf 0.3 --juego --gestos --guardar-crudo videos/crudo_sesion1.mp4
+   ```
+   Los videos anotados (`--guardar`) **no sirven** para esto.
+2. Extraer cuadros. El script toma uno cada 1,5 s y descarta los repetidos y los movidos. **Todos los cuadros de un
+   mismo video van al mismo split:**
+   ```
+   python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion1.mp4 videos/crudo_sesion2.mp4 --split train
+   python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion3.mp4 --split valid
+   python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion4.mp4 --split test
+   ```
+3. Seguir con el pre-etiquetado, igual que con fotos sueltas.
+
+Unos 10 minutos de juego dan del orden de 150–250 cuadros útiles. Conviene ir cambiando las cartas para cubrir los
+13 valores.
+
 ## Pre-etiquetado y corrección
 1. Correr el pre-etiquetado desde la carpeta del repo:
    ```
