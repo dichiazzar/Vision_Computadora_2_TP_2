@@ -80,8 +80,8 @@ mano del Jugador ─► MediaPipe (21 puntos) ─► pose ─► gesto ───
 Requiere Python 3.12.
 
 ```bash
-git clone https://github.com/JulianBlanco1/CV2.git
-cd CV2
+git clone https://github.com/dichiazzar/Vision_Computadora_2_TP_2.git
+cd Vision_Computadora_2_TP_2
 python -m venv .venv
 .venv\Scripts\activate          # Windows   (Linux/Mac: source .venv/bin/activate)
 pip install -r requirements.txt
