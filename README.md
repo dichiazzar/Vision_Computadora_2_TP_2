@@ -172,7 +172,7 @@ la mano del crupier repartiendo no dispara nada.
 | Dataset | Uso | Origen | Tamaño |
 |---|---|---|---|
 | **Dataset YOLO 13** | Entrenar YOLO-13 | Roboflow [`julian-segundo-blanco/dataset-a-marzb` v1](https://app.roboflow.com/julian-segundo-blanco/dataset-a-marzb/1) (dominio público) | 10.100 imágenes 512×512: 7.070 / 2.020 / 1.010 |
-| **Dataset YOLO - 1** | Entrenar YOLO-1 | Roboflow [`julian-segundo-blanco/dataset-b-5f2kh` v1](https://app.roboflow.com/julian-segundo-blanco/dataset-b-5f2kh/1) ⚠️ privado | Mismas imágenes, clase única `card-corner` |
+| **Dataset YOLO - 1** | Entrenar YOLO-1 | Roboflow `julian-segundo-blanco/dataset-b-5f2kh` v1 (proyecto privado; el dataset completo está en este repo) | Mismas imágenes, clase única `card-corner` |
 | **Dataset CNN-13** | Entrenar CNN-13 | Recortes de las cajas del Dataset YOLO 13 con 10% de margen (`YOLO - 13/Dataset YOLO 13/create_cnn_dataset.py`) | 28.280 / 8.080 / 4.040 recortes, balanceado |
 | **Dataset Real (teogopk)** | Test real y fine-tuning | [TeogopK/Playing-Cards-Object-Detection](https://github.com/TeogopK/Playing-Cards-Object-Detection), `data/real_dataset` (CC0) | 98 fotos reales 416×416: 69 / 18 / 11 |
 
@@ -187,8 +187,18 @@ datasets etiquetan **el índice de la esquina**, no la carta entera.
 - **Fotos propias:** [Dataset Real/README.md](Dataset%20Real/README.md) explica cómo sacar y etiquetar fotos propias.
   Incluye `prelabel.py`, que pre-etiqueta las fotos con YOLO-13 para corregirlas en Roboflow.
 
-> ⚠️ Para que el trabajo sea reproducible, hay que **hacer público el dataset B en Roboflow** o subirlo junto con el
-> repositorio.
+**Todos los datasets están incluidos en el repositorio**, con imágenes y etiquetas en formato YOLO, así que no hace
+falta descargar nada para reentrenar o evaluar:
+
+| Dataset | Carpeta |
+|---|---|
+| YOLO 13 | `YOLO - 13/Dataset YOLO 13/` |
+| YOLO - 1 | `YOLO - 1/Dataset YOLO - 1/` |
+| CNN-13 | `CNN - 13/Dataset CNN-13/` (también se regenera con `create_cnn_dataset.py`) |
+| teogopk | `Dataset Real/teogopk/` |
+
+Los enlaces de Roboflow quedan como referencia de dónde se armaron los datasets. El del dataset de YOLO-1 es un
+proyecto privado, por eso no lleva enlace, pero su contenido completo está en `YOLO - 1/Dataset YOLO - 1/`.
 
 ---
 
