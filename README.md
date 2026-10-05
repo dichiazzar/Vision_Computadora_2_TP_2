@@ -229,7 +229,11 @@ evaluar en test sin reentrenar.
 
 ## Cómo se arman las cartas (identificador)
 
-1. **Detección:** el pipeline elegido devuelve las esquinas, cada una con su valor y su confianza.
+1. **Detección:** el pipeline elegido devuelve las esquinas, cada una con su valor y su confianza. Se usa
+   *NMS agnóstico a la clase*: si dos cajas casi coinciden, queda solo la más confiable aunque tengan valores
+   distintos. Por defecto, YOLO solo suprime cajas del mismo valor. En una partida real, la esquina invertida y medio
+   tapada de un 3♥ salía dos veces, como "3" y como "5", y la "5" contaba como una carta de más. En el test propio
+   había 4 casos así (8/9, 8/9, 5/3, 6/5), y con NMS agnóstico no queda ninguno.
 2. **Emparejamiento:** las dos esquinas con índice de una carta están en vértices opuestos. Un par se acepta si cumple
    tres condiciones:
    - Las dos esquinas tienen **el mismo valor**. Hay una excepción: si la geometría es casi perfecta (costo ≤ 0,5),

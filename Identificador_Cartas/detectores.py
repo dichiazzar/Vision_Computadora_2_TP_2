@@ -64,7 +64,10 @@ class DetectorA:
         self.modelo.predictor = None          # descarta el estado de ByteTrack
 
     def detectar(self, frame, seguir=False):
-        kw = dict(conf=self.conf, max_det=MAX_DET, device=self.device, verbose=False)
+        # agnostic_nms: si dos cajas casi coinciden, queda sólo la más confiable AUNQUE tengan valores distintos.
+        # Por defecto YOLO sólo suprime cajas del mismo valor, y una esquina dudosa (un 3 invertido y medio tapado)
+        # salía dos veces, como "3" y como "5": la "5" contaba como una carta de más.
+        kw = dict(conf=self.conf, max_det=MAX_DET, device=self.device, agnostic_nms=True, verbose=False)
         r = (self.modelo.track(frame, persist=True, tracker=TRACKER, **kw) if seguir
              else self.modelo.predict(frame, **kw))[0]
         b = r.boxes
