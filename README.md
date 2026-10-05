@@ -86,7 +86,7 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows   (Linux/Mac: source .venv/bin/activate)
 pip install -r requirements.txt
 pip install --no-deps mediapipe==1.0.1   # gestos: sin dependencias, porque pide opencv-contrib (choca con opencv-python)
-python -m pytest tests                   # 43 tests de reglas y gestos
+python -m pytest tests                   # 46 tests de reglas y gestos
 ```
 
 - **GPU NVIDIA:** instalar la versión de PyTorch con CUDA desde [pytorch.org](https://pytorch.org).
@@ -287,7 +287,11 @@ seguimiento y los gestos, y recorre las etapas `ESPERANDO → REPARTO → JUGADO
 - **Pagos:** ganar +1, blackjack +1,5, perder −1, empate 0. Se lleva el saldo y el historial de todas las manos.
 
 **Robustez frente a la visión:**
-- **Cambios confirmados:** un cambio en la mesa se acepta recién si se repite 5 cuadros seguidos.
+- **Cambios confirmados:** un cambio en la mesa se acepta recién si se repite 5 cuadros seguidos. Si el cambio
+  **agrega cartas que nadie pidió** (en el turno del Jugador, una carta suya sin pedir o una de la Casa; en el turno
+  de la Casa, una del Jugador), tiene que mantenerse **20 cuadros (~2 s)**. Así, una lectura fantasma de unos
+  instantes no cambia la mano. Las cartas esperadas (reparto, carta pedida, cartas de la Casa en su turno) se
+  confirman rápido.
 - **Cartas tapadas:** durante una mano las cartas solo se agregan, así que una carta que deja de verse un rato (la
   tapa una mano) se mantiene.
 - **Lecturas corregidas:** si una carta cambia de valor con la misma cantidad de cartas, se toma como corrección.
@@ -295,7 +299,7 @@ seguimiento y los gestos, y recorre las etapas `ESPERANDO → REPARTO → JUGADO
   del Jugador.
 - **Fin de la mano:** termina cuando la mesa queda vacía.
 
-Hay **23 tests** con secuencias de mano, cartas tapadas, ruido de un cuadro, lecturas corregidas, gestos fuera de
+Hay **26 tests** con secuencias de mano, cartas tapadas, ruido de un cuadro, lecturas corregidas, gestos fuera de
 turno y saldo: `python -m pytest tests`.
 
 ## Gestos de la mano (`Gestos/gestos.py`)

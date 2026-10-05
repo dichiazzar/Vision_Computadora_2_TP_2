@@ -10,10 +10,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "Identificador_C
 from blackjack import Blackjack, Reglas, es_blackjack, puntaje   # noqa: E402
 
 CONF = 3   # cuadros para confirmar en los tests
+CONF_NP = 8   # cuadros para confirmar cartas que nadie pidió
 
 
 def nuevo(**reglas):
-    return Blackjack(reglas=Reglas(**reglas), confirmar=CONF, cuadros_vacia=5)
+    return Blackjack(reglas=Reglas(**reglas), confirmar=CONF, cuadros_vacia=5, confirmar_no_pedida=CONF_NP)
 
 
 def ver(bj, casa, jugador, n=CONF):
@@ -136,7 +137,7 @@ def test_correccion_de_lectura():
 def test_carta_no_pedida_es_irregularidad_pero_se_acepta():
     bj = nuevo()
     repartir(bj, "9", "10 2")
-    ver(bj, "9", "10 2 3")
+    ver(bj, "9", "10 2 3", n=CONF_NP)
     assert bj.jugador == ["10", "2", "3"]
     assert any(e.tipo == "irregularidad" and "sin que la pidiera" in e.texto for e in bj.eventos)
 
@@ -171,3 +172,29 @@ def test_gestos_ignorados_mientras_espera_la_carta():
     assert not bj.gesto("PEDIR")
     ver(bj, "9", "10 2 5")                     # llega la carta: vuelve a aceptar gestos
     assert bj.gesto("PLANTARSE") and bj.etapa == "CASA"
+
+
+def test_carta_no_pedida_breve_se_ignora():
+    bj = nuevo()
+    repartir(bj, "9", "10 2")
+    ver(bj, "9", "10 2 5", n=CONF_NP - 1)       # un "5" fantasma durante un rato, pero menos que lo exigido
+    ver(bj, "9", "10 2")
+    assert bj.jugador == ["10", "2"] and bj.etapa == "JUGADOR"
+    assert not any(e.tipo == "irregularidad" for e in bj.eventos)
+
+
+def test_carta_pedida_se_confirma_rapido():
+    bj = nuevo()
+    repartir(bj, "9", "10 2")
+    bj.gesto("PEDIR")
+    ver(bj, "9", "10 2 5", n=CONF)              # la pedida no necesita la confirmación larga
+    assert bj.jugador == ["10", "2", "5"]
+
+
+def test_carta_de_la_casa_en_turno_del_jugador_necesita_confirmacion_larga():
+    bj = nuevo()
+    repartir(bj, "9", "10 2")
+    ver(bj, "9 7", "10 2", n=CONF)
+    assert bj.casa == ["9"]
+    ver(bj, "9 7", "10 2", n=CONF_NP - CONF)
+    assert sorted(bj.casa) == ["7", "9"]

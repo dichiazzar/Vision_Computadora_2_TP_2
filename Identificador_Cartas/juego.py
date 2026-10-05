@@ -26,14 +26,16 @@ def _entidad(nombre, valores):
 
 
 class Partida:
-    def __init__(self, detector, reglas=None, ventana=15, memoria=10, confirmar=5, cuadros_vacia=20, gestos=None):
+    def __init__(self, detector, reglas=None, ventana=15, memoria=10, confirmar=5, cuadros_vacia=20, gestos=None,
+                 confirmar_no_pedida=20):
         """gestos: un Gestos.gestos.ReconocedorDeGestos (opcional). Si está, los gestos se detectan en cada cuadro."""
         self.gestos = gestos
         from identificador_cartas import analizar, dibujar   # import diferido (evita import circular)
         self._analizar, self._dibujar = analizar, dibujar
         self.detector = detector
         self.ventana, self.memoria = ventana, memoria
-        self._config = dict(reglas=reglas or Reglas(), confirmar=confirmar, cuadros_vacia=cuadros_vacia)
+        self._config = dict(reglas=reglas or Reglas(), confirmar=confirmar, cuadros_vacia=cuadros_vacia,
+                            confirmar_no_pedida=confirmar_no_pedida)
         self.juego = Blackjack(**self._config)
         self.reiniciar_vision()
         self.ultimo_gesto = None

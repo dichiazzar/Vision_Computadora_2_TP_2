@@ -13,6 +13,9 @@ Etapas:
 
 Robustez frente a la visión:
     - Una mano observada se acepta recién cuando se repite `confirmar` cuadros seguidos (filtra ruido).
+    - Si el cambio agrega cartas que nadie pidió (en el turno del Jugador, una carta suya sin haberla pedido o una
+      de la Casa; en el turno de la Casa, una del Jugador), tiene que repetirse `confirmar_no_pedida` cuadros
+      (~2 s): una lectura fantasma de unos instantes no cambia la mano.
     - Durante una mano las cartas sólo se agregan: si una carta deja de verse (la tapa una mano, un reflejo)
       se asume que sigue ahí. La mano termina cuando la mesa queda vacía `cuadros_vacia` cuadros.
     - Si una carta cambia de valor (lectura corregida) se acepta la nueva lectura estable.
@@ -55,6 +58,7 @@ class Evento:
 class Blackjack:
     reglas: Reglas = field(default_factory=Reglas)
     confirmar: int = 5          # cuadros iguales para aceptar un cambio en la mesa
+    confirmar_no_pedida: int = 20   # ídem si el cambio agrega cartas que nadie pidió (más desconfiado)
     cuadros_vacia: int = 20     # cuadros con la mesa vacía para dar la mano por terminada
 
     def __post_init__(self):
@@ -120,13 +124,25 @@ class Blackjack:
             self._repeticiones += 1
         else:
             self._candidata, self._repeticiones = clave, 1
-        if self._repeticiones != self.confirmar:     # se procesa una sola vez, al confirmarse
+        requeridas = self.confirmar_no_pedida if self._agrega_no_pedidas(casa, jugador) else self.confirmar
+        if self._repeticiones != requeridas:        # se procesa una sola vez, al confirmarse
             return self.etapa
 
         nuevas_j = self._actualizar(self.jugador, jugador, "Jugador")
         nuevas_c = self._actualizar(self.casa, casa, "Casa")
         self._procesar(nuevas_c, nuevas_j)
         return self.etapa
+
+    def _agrega_no_pedidas(self, casa, jugador):
+        """¿La observación agrega cartas que nadie pidió en esta etapa?"""
+        def agregadas(aceptadas, observadas):
+            return sum((Counter(observadas) - Counter(aceptadas)).values()) if len(observadas) > len(aceptadas) else 0
+        nuevas_j, nuevas_c = agregadas(self.jugador, jugador), agregadas(self.casa, casa)
+        if self.etapa == "JUGADOR":
+            return nuevas_c > 0 or (nuevas_j > 0 and not self.esperando_carta)
+        if self.etapa == "CASA":
+            return nuevas_j > 0
+        return False
 
     def _actualizar(self, aceptadas, observadas, quien):
         """Incorpora las cartas nuevas. Las que dejaron de verse se mantienen (tapadas).
