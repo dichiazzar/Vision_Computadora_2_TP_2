@@ -198,3 +198,16 @@ def test_carta_de_la_casa_en_turno_del_jugador_necesita_confirmacion_larga():
     assert bj.casa == ["9"]
     ver(bj, "9 7", "10 2", n=CONF_NP - CONF)
     assert sorted(bj.casa) == ["7", "9"]
+
+
+def test_no_se_confirma_nada_mientras_hay_una_mano_sobre_la_mesa():
+    bj = nuevo()
+    repartir(bj, "K", "10 8")
+    bj.gesto("PLANTARSE")
+    for _ in range(CONF_NP + 5):               # la mano tapa la mesa: aparece una "K" fantasma
+        bj.observar(["K", "K"], ["10", "8"], mano_presente=True)
+    assert bj.casa == ["K"] and bj.etapa == "CASA"
+    ver(bj, "K", "10 8")                       # se retira la mano: la mesa vuelve a lo real
+    assert bj.casa == ["K"] and bj.etapa == "CASA"
+    ver(bj, "K 7", "10 8")                     # la Casa da vuelta su carta: 17, se planta
+    assert bj.resultado[0] == "JUGADOR"

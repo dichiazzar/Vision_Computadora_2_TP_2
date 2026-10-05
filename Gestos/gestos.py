@@ -117,6 +117,7 @@ class ReconocedorDeGestos:
         self.cuadros_min, self.espera_total, self.zona_jugador = cuadros_min, espera, zona_jugador
         self.plantarse, self.barrido, self.tolerancia = plantarse, barrido, tolerancia
         self.ultimas_manos = []       # (puntos, pose) del último cuadro, para dibujar
+        self.manos_en_mesa = 0        # manos detectadas en el último cuadro, en cualquier zona
         self.reiniciar()
 
     def reiniciar(self):
@@ -176,6 +177,7 @@ class ReconocedorDeGestos:
         """Detecta las manos en el cuadro y devuelve el gesto (o None)."""
         manos = self.detector.detectar(frame)
         alto = frame.shape[0]
+        self.manos_en_mesa = len(manos)          # cualquier zona (Casa o Jugador): lo usa el motor de reglas
         validas = [m for m in manos if not self.zona_jugador or m[:, 1].mean() > alto / 2]
         self.ultimas_manos = [(m, clasificar_pose(m)) for m in validas]
         return self.actualizar(self.ultimas_manos)

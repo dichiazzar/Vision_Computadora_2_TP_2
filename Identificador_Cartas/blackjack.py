@@ -13,6 +13,7 @@ Etapas:
 
 Robustez frente a la visión:
     - Una mano observada se acepta recién cuando se repite `confirmar` cuadros seguidos (filtra ruido).
+    - Mientras haya una mano sobre la mesa (dato del módulo de gestos) no se confirma ningún cambio.
     - Si el cambio agrega cartas que nadie pidió (en el turno del Jugador, una carta suya sin haberla pedido o una
       de la Casa; en el turno de la Casa, una del Jugador), tiene que repetirse `confirmar_no_pedida` cuadros
       (~2 s): una lectura fantasma de unos instantes no cambia la mano.
@@ -101,8 +102,10 @@ class Blackjack:
             return True
         return False
 
-    def observar(self, casa, jugador):
-        """Mano observada en este cuadro (listas de valores de Casa y Jugador). Devuelve la etapa."""
+    def observar(self, casa, jugador, mano_presente=False):
+        """Mano observada en este cuadro (listas de valores de Casa y Jugador). Devuelve la etapa.
+        mano_presente: hay una mano sobre la mesa (la detecta el módulo de gestos). Mientras tanto no se confirma
+        ningún cambio: la mano tapa cartas y produce lecturas falsas; se confirma cuando se retira."""
         self.cuadro += 1
         casa, jugador = sorted(casa), sorted(jugador)
 
@@ -116,6 +119,10 @@ class Blackjack:
             return self.etapa
         self._vacia = 0
         if self.etapa == "FIN":
+            return self.etapa
+
+        if mano_presente:
+            self._candidata, self._repeticiones = None, 0
             return self.etapa
 
         # debounce: la observación tiene que repetirse `confirmar` cuadros

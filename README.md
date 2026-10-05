@@ -86,7 +86,7 @@ python -m venv .venv
 .venv\Scripts\activate          # Windows   (Linux/Mac: source .venv/bin/activate)
 pip install -r requirements.txt
 pip install --no-deps mediapipe==1.0.1   # gestos: sin dependencias, porque pide opencv-contrib (choca con opencv-python)
-python -m pytest tests                   # 46 tests de reglas y gestos
+python -m pytest tests                   # 54 tests de reglas, cartas y gestos
 ```
 
 - **GPU NVIDIA:** instalar la versión de PyTorch con CUDA desde [pytorch.org](https://pytorch.org).
@@ -248,6 +248,12 @@ evaluar en test sin reentrenar.
    Se evalúan todos los pares posibles y se aceptan de mejor a peor, sin reutilizar esquinas. Así, con varias cartas
    del mismo valor juntas, cada esquina se une con su pareja más probable.
 3. **Esquinas sueltas:** una esquina sin pareja cuenta como carta, porque puede ser una carta tapada a medias.
+   Hay dos excepciones, que evitan "cartas fantasma":
+   - **Esquinas duplicadas:** dos esquinas del mismo valor que se superponen son la misma esquina vista dos veces
+     (por ejemplo, una copia recordada por el seguimiento y la detección nueva). Queda una sola.
+   - **Índices imposibles:** una esquina suelta que cae *dentro* de una carta completa del mismo valor no puede ser un
+     índice real, porque la taparía esa carta. Es una detección falsa sobre la cara de la carta, por ejemplo el dibujo
+     de una K medio tapada por una mano, y se descarta.
 4. **Reparto y puntaje:** cada carta va a la Casa o al Jugador según su centro. J, Q y K valen 10, y el As vale 11 si
    no pasa de 21 (si no, 1). Luego se determina el resultado: alguien se pasa, blackjack, gana uno o empate.
 
@@ -287,6 +293,9 @@ seguimiento y los gestos, y recorre las etapas `ESPERANDO → REPARTO → JUGADO
 - **Pagos:** ganar +1, blackjack +1,5, perder −1, empate 0. Se lleva el saldo y el historial de todas las manos.
 
 **Robustez frente a la visión:**
+- **Mano sobre la mesa:** con `--gestos`, mientras MediaPipe detecta una mano sobre la mesa (la del crupier
+  repartiendo o la del Jugador haciendo un gesto), no se confirma ningún cambio. La mano tapa cartas y produce
+  lecturas falsas, así que los cambios se confirman cuando se retira.
 - **Cambios confirmados:** un cambio en la mesa se acepta recién si se repite 5 cuadros seguidos. Si el cambio
   **agrega cartas que nadie pidió** (en el turno del Jugador, una carta suya sin pedir o una de la Casa; en el turno
   de la Casa, una del Jugador), tiene que mantenerse **20 cuadros (~2 s)**. Así, una lectura fantasma de unos
@@ -299,7 +308,7 @@ seguimiento y los gestos, y recorre las etapas `ESPERANDO → REPARTO → JUGADO
   del Jugador.
 - **Fin de la mano:** termina cuando la mesa queda vacía.
 
-Hay **26 tests** con secuencias de mano, cartas tapadas, ruido de un cuadro, lecturas corregidas, gestos fuera de
+Hay **27 tests** con secuencias de mano, cartas tapadas, ruido de un cuadro, lecturas corregidas, gestos fuera de
 turno y saldo: `python -m pytest tests`.
 
 ## Gestos de la mano (`Gestos/gestos.py`)

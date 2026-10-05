@@ -69,7 +69,8 @@ class Partida:
         if gesto and self.juego.gesto(gesto):
             self.ultimo_gesto = (gesto, self.juego.cuadro)
         etapa_antes = self.juego.etapa
-        self.juego.observar([c.rank for c in casa_m.cartas], [c.rank for c in jugador_m.cartas])
+        mano_presente = self.gestos is not None and self.gestos.manos_en_mesa > 0
+        self.juego.observar([c.rank for c in casa_m.cartas], [c.rank for c in jugador_m.cartas], mano_presente)
         if etapa_antes == "FIN" and self.juego.etapa == "ESPERANDO":
             self.reiniciar_vision()                     # mano nueva: se descartan los tracks viejos
 
