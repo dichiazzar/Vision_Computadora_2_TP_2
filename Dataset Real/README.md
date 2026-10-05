@@ -80,18 +80,22 @@ Unos 10 minutos de juego dan del orden de 150–250 cuadros útiles. Conviene ir
 6. Descomprimirla en `Dataset Real/roboflow/`, que tiene que quedar con `data.yaml`, `train/`, `valid/` y `test/`.
 
 ## Lo que sigue (después de tener el dataset)
-Correr desde la carpeta del repo:
+El export de Roboflow tiene que quedar en `Dataset Real/roboflow/`, que es el dataset `propio`. Correr desde la
+carpeta del repo:
 
-1. **Evaluar los modelos base en el test real** (línea de base para el paper):
+1. **Evaluar los modelos base en el test propio** (línea de base para el paper):
    ```
-   python Experimentos/evaluar_real.py
+   python Experimentos/evaluar_real.py --dataset propio
    ```
-2. **Fine-tuning** de los tres modelos con train real y sintético mezclados. Solo usa train y valid; el test no se toca:
+2. **Fine-tuning** con train propio y sintético mezclados. Solo usa train y valid; el test no se toca. Los pesos
+   quedan en las carpetas `*-finetune-propio`, sin pisar los ajustados con teogopk (`*-finetune-real`):
    ```
-   python Experimentos/finetune_real.py --modelo todos            # en la Mac: --device mps
+   python Experimentos/finetune_real.py --dataset propio --modelo todos      # en la Mac: --device mps
    ```
-3. **Volver a evaluar.** Ahora aparecen también `A_ft` y `B_ft`, comparados sobre el mismo test real:
+3. **Volver a evaluar.** Ahora aparecen también `A_propio` y `B_propio`, comparados sobre el mismo test:
    ```
-   python Experimentos/evaluar_real.py
+   python Experimentos/evaluar_real.py --dataset propio
    ```
+4. **Jugar con los pesos ajustados:** `python Identificador_Cartas/identificador_cartas.py ... --pesos propio`.
+
 Los resultados quedan en `Experimentos/resultados/` (CSV por configuración y variante, AP por valor y detalle por imagen).

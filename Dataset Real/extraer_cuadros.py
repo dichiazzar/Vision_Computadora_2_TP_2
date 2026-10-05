@@ -1,8 +1,11 @@
 """Extrae cuadros de videos CRUDOS (grabados con --guardar-crudo) para usarlos como fotos de entrenamiento.
 
 Toma un cuadro cada `--cada` segundos y descarta:
-  - los casi iguales al último guardado (la mesa no cambió: no aportan nada nuevo);
+  - los casi iguales al último guardado: se compara por BLOQUES (el bloque que más cambió), porque agregar una
+    carta cambia sólo un pedacito de la imagen y en el promedio global casi no se nota;
   - los movidos o desenfocados (nitidez muy por debajo de la mediana del video).
+Si el celular grabó en vertical, el video trae franjas negras a los costados: se recortan (así las cartas quedan
+más grandes cuando el modelo reduce la imagen a 640 px).
 Los guarda en Dataset Real/fotos/<split>/, donde los toma prelabel.py.
 
 IMPORTANTE: separar por sesión, no al azar. Todos los cuadros de un mismo video van al mismo split; el test tiene
@@ -24,7 +27,25 @@ HERE = Path(__file__).resolve().parent
 
 
 def miniatura(frame):
-    return cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (96, 54), interpolation=cv2.INTER_AREA).astype(np.float32)
+    return cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (96, 72), interpolation=cv2.INTER_AREA).astype(np.float32)
+
+
+def diferencia_local(a, b, grilla=(6, 8)):
+    """Diferencia media del bloque que más cambió (grilla filas x columnas)."""
+    f, c = grilla
+    d = np.abs(a - b)
+    h, w = d.shape[0] // f * f, d.shape[1] // c * c
+    return float(d[:h, :w].reshape(f, h // f, c, w // c).mean((1, 3)).max())
+
+
+def zona_util(frame, umbral=12):
+    """(x1, x2, y1, y2) sin las franjas negras (celular en vertical dentro de un cuadro horizontal)."""
+    gris = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    cols = np.where(gris.mean(0) > umbral)[0]
+    filas = np.where(gris.mean(1) > umbral)[0]
+    if len(cols) == 0 or len(filas) == 0:
+        return 0, frame.shape[1], 0, frame.shape[0]
+    return int(cols[0]), int(cols[-1]) + 1, int(filas[0]), int(filas[-1]) + 1
 
 
 def nitidez(frame):
@@ -53,8 +74,9 @@ def main():
     ap.add_argument("videos", nargs="+")
     ap.add_argument("--split", required=True, choices=["train", "valid", "test"])
     ap.add_argument("--cada", type=float, default=1.5, help="segundos entre cuadros candidatos")
-    ap.add_argument("--diferencia", type=float, default=6.0,
-                    help="diferencia media mínima (0-255) con el último cuadro guardado")
+    ap.add_argument("--diferencia", type=float, default=14.0,
+                    help="diferencia mínima (0-255) del bloque que más cambió respecto del último cuadro guardado")
+    ap.add_argument("--sin-recorte", action="store_true", help="no recortar las franjas negras")
     ap.add_argument("--nitidez", type=float, default=0.5,
                     help="se descartan los cuadros con nitidez < este factor x la mediana del video")
     ap.add_argument("--salida", default=str(HERE / "fotos"))
@@ -68,6 +90,10 @@ def main():
         if not cuadros:
             print(f"{video}: no se pudo leer")
             continue
+        if not args.sin_recorte:      # recorte común a todo el video (mediana de las zonas útiles)
+            zonas = np.array([zona_util(f) for _, f in cuadros[:: max(1, len(cuadros) // 15)]])
+            x1, x2, y1, y2 = (int(v) for v in np.median(zonas, 0))
+            cuadros = [(i, f[y1:y2, x1:x2]) for i, f in cuadros]
         nit = [nitidez(f) for _, f in cuadros]
         minimo = args.nitidez * float(np.median(nit))
         ultimo, guardados, borrosos, repetidos = None, 0, 0, 0
@@ -76,13 +102,14 @@ def main():
                 borrosos += 1
                 continue
             m = miniatura(f)
-            if ultimo is not None and float(np.abs(m - ultimo).mean()) < args.diferencia:
+            if ultimo is not None and diferencia_local(m, ultimo) < args.diferencia:
                 repetidos += 1
                 continue
             cv2.imwrite(str(destino / f"{Path(video).stem}_{i:06d}.jpg"), f, [cv2.IMWRITE_JPEG_QUALITY, 95])
             ultimo, guardados = m, guardados + 1
         total += guardados
-        print(f"{Path(video).name}: {len(cuadros)} candidatos ({args.cada:g} s) -> {guardados} guardados "
+        tam = f"{cuadros[0][1].shape[1]}x{cuadros[0][1].shape[0]}"
+        print(f"{Path(video).name}: {len(cuadros)} candidatos ({args.cada:g} s) -> {guardados} guardados ({tam}) "
               f"| {repetidos} repetidos | {borrosos} borrosos")
     print(f"\n{total} cuadros en {destino}")
     print('Siguiente paso: python "Dataset Real/prelabel.py" (pre-etiqueta para corregir en Roboflow)')

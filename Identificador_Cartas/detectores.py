@@ -22,10 +22,20 @@ PESOS_YOLO_13 = REPO / "YOLO - 13" / "runs" / "detect" / "blackjack-cv" / "yolo1
 PESOS_YOLO_1 = REPO / "YOLO - 1" / "runs" / "detect" / "blackjack-cv" / "yolo1-baseline" / "weights" / "best.pt"
 PESOS_CNN_13 = REPO / "CNN - 13" / "runs" / "cnn13-resnet18" / "best.pt"
 
-# Pesos después del fine-tuning con fotos reales (Experimentos/finetune_real.py)
-PESOS_YOLO_13_FT = REPO / "YOLO - 13" / "runs" / "detect" / "blackjack-cv" / "yolo13-finetune-real" / "weights" / "best.pt"
-PESOS_YOLO_1_FT = REPO / "YOLO - 1" / "runs" / "detect" / "blackjack-cv" / "yolo1-finetune-real" / "weights" / "best.pt"
-PESOS_CNN_13_FT = REPO / "CNN - 13" / "runs" / "cnn13-finetune-real" / "best.pt"
+# Pesos después del fine-tuning con fotos reales (Experimentos/finetune_real.py). Cada fine-tuning tiene una etiqueta:
+#   "real"   -> con el dataset público teogopk (otro mazo)
+#   "propio" -> con fotos del mazo y la mesa de la demo (Dataset Real/roboflow)
+ETIQUETAS_FT = {"real": "teogopk", "propio": "fotos propias"}
+
+
+def pesos_finetune(etiqueta):
+    """(YOLO-13, YOLO-1, CNN-13) ajustados con el dataset de esa etiqueta."""
+    return (REPO / "YOLO - 13" / "runs" / "detect" / "blackjack-cv" / f"yolo13-finetune-{etiqueta}" / "weights" / "best.pt",
+            REPO / "YOLO - 1" / "runs" / "detect" / "blackjack-cv" / f"yolo1-finetune-{etiqueta}" / "weights" / "best.pt",
+            REPO / "CNN - 13" / "runs" / f"cnn13-finetune-{etiqueta}" / "best.pt")
+
+
+PESOS_YOLO_13_FT, PESOS_YOLO_1_FT, PESOS_CNN_13_FT = pesos_finetune("real")
 
 # Mismo margen que create_cnn_dataset.py usó para generar los recortes de entrenamiento
 PADDING_RECORTE = 0.10
@@ -123,12 +133,21 @@ class DetectorB:
         return esquinas
 
 
-def crear_detector(pipeline, conf=0.5, finetune=False):
-    """finetune=True usa los pesos ajustados con fotos reales (Experimentos/finetune_real.py). Por defecto se usan
-    los base: con el mazo de la demo (Bicycle Dragon) rinden mejor, porque el fine-tuning se hizo con otro mazo."""
+def crear_detector(pipeline, conf=0.5, pesos="auto"):
+    """pesos: "base" (entrenados con el dataset sintético), la etiqueta de un fine-tuning ("real", "propio") o
+    "auto": los ajustados con fotos propias si existen (en el escenario de la demo el recall de YOLO-13 pasa de 0.66
+    a 0.96), y si no los base."""
+    if pesos == "auto":
+        y13, y1, cnn = pesos_finetune("propio")
+        listos = y13.exists() if pipeline.upper() == "A" else (y1.exists() and cnn.exists())
+        pesos = "propio" if listos else "base"
+    if pesos == "base":
+        return DetectorA(conf=conf) if pipeline.upper() == "A" else DetectorB(conf=conf)
+    y13, y1, cnn = pesos_finetune(pesos)
     if pipeline.upper() == "A":
-        return DetectorA(conf=conf, pesos=PESOS_YOLO_13_FT if finetune else PESOS_YOLO_13,
-                         nombre="A: YOLO-13 ft" if finetune else None)
-    if finetune:
-        return DetectorB(conf=conf, pesos_yolo=PESOS_YOLO_1_FT, pesos_cnn=PESOS_CNN_13_FT, nombre="B: YOLO-1 + CNN-13 ft")
-    return DetectorB(conf=conf)
+        if not y13.exists():
+            raise FileNotFoundError(f"No hay fine-tuning '{pesos}' de YOLO-13 ({y13})")
+        return DetectorA(conf=conf, pesos=y13, nombre=f"A: YOLO-13 ft-{pesos}")
+    if not (y1.exists() and cnn.exists()):
+        raise FileNotFoundError(f"No hay fine-tuning '{pesos}' de YOLO-1 / CNN-13 ({y1}, {cnn})")
+    return DetectorB(conf=conf, pesos_yolo=y1, pesos_cnn=cnn, nombre=f"B: YOLO-1 + CNN-13 ft-{pesos}")

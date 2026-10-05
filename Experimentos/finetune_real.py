@@ -28,7 +28,11 @@ import cv2
 import yaml
 
 REPO = Path(__file__).resolve().parent.parent
-REAL = REPO / "Dataset Real" / "teogopk"
+# --dataset elige a la vez de dónde se leen las fotos y con qué etiqueta se guardan los pesos (no se pueden mezclar)
+DATASETS = {"propio": (REPO / "Dataset Real" / "roboflow", "propio"),    # fotos del mazo de la demo
+            "teogopk": (REPO / "Dataset Real" / "teogopk", "real")}      # dataset público (otro mazo)
+REAL = DATASETS["propio"][0]
+ETIQUETA = "propio"
 TRABAJO = REPO / "Experimentos" / "finetune_data"
 sys.path.insert(0, str(REPO / "Identificador_Cartas"))
 sys.path.insert(0, str(REPO / "CNN - 13"))
@@ -94,7 +98,8 @@ def finetune_yolo(modelo, args):
 
     una_clase = modelo == "yolo1"
     base = D.PESOS_YOLO_1 if una_clase else D.PESOS_YOLO_13
-    destino_pesos = D.PESOS_YOLO_1_FT if una_clase else D.PESOS_YOLO_13_FT
+    y13, y1, _ = D.pesos_finetune(ETIQUETA)
+    destino_pesos = y1 if una_clase else y13
     run_dir = destino_pesos.parent.parent
     trabajo = TRABAJO / modelo
     if trabajo.exists():
@@ -197,7 +202,8 @@ def finetune_cnn(args):
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr_cnn, weight_decay=1e-4)
     sched = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs * len(dl_tr))
 
-    out = D.PESOS_CNN_13_FT.parent
+    destino_cnn = D.pesos_finetune(ETIQUETA)[2]
+    out = destino_cnn.parent
     out.mkdir(parents=True, exist_ok=True)
     _, acc0, _, _ = T.evaluate(model, dl_va, device, criterion)
     print(f"  exactitud en valid real ANTES del fine-tuning: {acc0:.4f}")
@@ -218,17 +224,17 @@ def finetune_cnn(args):
             mejor, sin_mejora = va, 0
             torch.save({**{k: v for k, v in base.items() if k != "state_dict"},
                         "state_dict": model.state_dict(), "epoch": ep, "val_acc": float(va),
-                        "val_real_acc_antes": float(acc0), "finetune_args": vars(args)}, D.PESOS_CNN_13_FT)
+                        "val_real_acc_antes": float(acc0), "finetune_args": vars(args)}, destino_cnn)
         else:
             sin_mejora += 1
             if sin_mejora >= args.patience:
                 print("  early stopping")
                 break
-    print(f"  mejor exactitud en valid real: {mejor:.4f} (antes {acc0:.4f}) -> {D.PESOS_CNN_13_FT}")
+    print(f"  mejor exactitud en valid real: {mejor:.4f} (antes {acc0:.4f}) -> {destino_cnn}")
 
 
 def main():
-    global REAL
+    global REAL, ETIQUETA
     ap = argparse.ArgumentParser()
     ap.add_argument("--modelo", default="todos", choices=["todos", "yolo13", "yolo1", "cnn"])
     ap.add_argument("--epochs", type=int, default=15)
@@ -242,10 +248,19 @@ def main():
     ap.add_argument("--device", default=None, help="cpu | mps | 0 (GPU). Por defecto: automático")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--real", default=str(REAL), help="carpeta del dataset real exportado de Roboflow")
+    ap.add_argument("--dataset", default="propio", choices=list(DATASETS),
+                    help="propio = Dataset Real/roboflow (pesos *-finetune-propio) | "
+                         "teogopk = Dataset Real/teogopk (pesos *-finetune-real)")
+    ap.add_argument("--real", help="otra carpeta exportada de Roboflow (se guarda con --etiqueta)")
+    ap.add_argument("--etiqueta", help="nombre de los pesos con --real (p. ej. 'propio2')")
     args = ap.parse_args()
 
-    REAL = Path(args.real)
+    REAL, ETIQUETA = DATASETS[args.dataset]
+    if args.real:
+        if not args.etiqueta:
+            sys.exit("con --real hay que indicar también --etiqueta (para no pisar otros pesos)")
+        REAL, ETIQUETA = Path(args.real), args.etiqueta
+    print(f"dataset real: {REAL} -> pesos '*-finetune-{ETIQUETA}'")
 
     if not (REAL / "data.yaml").exists():
         sys.exit(f"No encontré {REAL / 'data.yaml'}: exportar el dataset real de Roboflow ahí (ver Dataset Real/README.md)")

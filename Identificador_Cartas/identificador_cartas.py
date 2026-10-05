@@ -351,7 +351,9 @@ def main():
                    help="A = YOLO-13 | B = YOLO-1 + CNN-13")
     p.add_argument("--conf", type=float, default=0.5, help="confianza mínima de detección")
     p.add_argument("--resolucion", default="1280x720", help="cámara: resolución pedida (p. ej. 1920x1080)")
-    p.add_argument("--finetune", action="store_true", help="usar los pesos ajustados con fotos reales (teogopk)")
+    p.add_argument("--pesos", default="auto", choices=["auto", "base", "real", "propio"],
+                   help="auto = propio si existe, si no base | base = dataset sintético | "
+                        "real = ajustados con teogopk | propio = ajustados con fotos propias")
     p.add_argument("--guardar", help="ruta para guardar el resultado (imagen o .mp4)")
     p.add_argument("--guardar-crudo", help="video/cámara: grabar también la imagen limpia, sin dibujos (.mp4)")
     p.add_argument("--sin-ventana", action="store_true", help="no abrir ventana (sólo imprimir / guardar)")
@@ -367,7 +369,7 @@ def main():
     p.add_argument("--pide-17-blando", action="store_true", help="juego: la Casa pide con 17 blando")
     args = p.parse_args()
 
-    detector = crear_detector(args.pipeline, conf=args.conf, finetune=args.finetune)
+    detector = crear_detector(args.pipeline, conf=args.conf, pesos=args.pesos)
     if args.imagen:
         modo_imagen(args, detector)
     elif args.juego:

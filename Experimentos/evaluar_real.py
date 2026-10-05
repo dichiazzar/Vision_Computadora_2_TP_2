@@ -212,26 +212,34 @@ def evaluar(detector, muestras, variante, conf_op):
 
 
 def configuraciones():
+    """A y B base, más los fine-tunings que existan: A_ft / B_ft (teogopk) y A_propio / B_propio (fotos propias)."""
     confs = [("A", lambda: D.DetectorA(nombre="A")),
              ("B", lambda: D.DetectorB(nombre="B"))]
-    if D.PESOS_YOLO_13_FT.exists():
-        confs.append(("A_ft", lambda: D.DetectorA(pesos=D.PESOS_YOLO_13_FT, nombre="A_ft")))
-    if D.PESOS_YOLO_1_FT.exists() and D.PESOS_CNN_13_FT.exists():
-        confs.append(("B_ft", lambda: D.DetectorB(pesos_yolo=D.PESOS_YOLO_1_FT, pesos_cnn=D.PESOS_CNN_13_FT,
-                                                  nombre="B_ft")))
+    for etiqueta, sufijo in (("real", "ft"), ("propio", "propio")):
+        y13, y1, cnn = D.pesos_finetune(etiqueta)
+        if y13.exists():
+            confs.append((f"A_{sufijo}", lambda y13=y13, s=sufijo: D.DetectorA(pesos=y13, nombre=f"A_{s}")))
+        if y1.exists() and cnn.exists():
+            confs.append((f"B_{sufijo}", lambda y1=y1, cnn=cnn, s=sufijo:
+                          D.DetectorB(pesos_yolo=y1, pesos_cnn=cnn, nombre=f"B_{s}")))
     return confs
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dataset", default=str(REPO / "Dataset Real" / "teogopk"))
+    ap.add_argument("--dataset", default="propio",
+                    help="propio (Dataset Real/roboflow), teogopk (Dataset Real/teogopk) u otra carpeta")
     ap.add_argument("--split", default="test")
     ap.add_argument("--conf", type=float, default=0.5, help="umbral del punto de operación")
     ap.add_argument("--sin-variantes", action="store_true", help="sólo las imágenes originales")
     ap.add_argument("--salida", default=str(REPO / "Experimentos" / "resultados"))
     args = ap.parse_args()
 
-    dataset, salida = Path(args.dataset), Path(args.salida)
+    nombre_dataset = args.dataset if args.dataset in ("propio", "teogopk") else Path(args.dataset).name
+    dataset = {"propio": REPO / "Dataset Real" / "roboflow",
+               "teogopk": REPO / "Dataset Real" / "teogopk"}.get(args.dataset, Path(args.dataset))
+    salida = Path(args.salida)
+    print("dataset:", dataset)
     if not (dataset / "data.yaml").exists():
         sys.exit(f"No encontré {dataset / 'data.yaml'}: exportar el dataset real de Roboflow ahí (ver Dataset Real/README.md)")
     muestras = cargar_split(dataset, args.split)
@@ -255,9 +263,9 @@ def main():
     import pandas as pd
     salida.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(filas)
-    df.to_csv(salida / f"eval_real_{args.split}.csv", index=False, float_format="%.4f")
-    (salida / f"eval_real_{args.split}_ap_por_valor.json").write_text(json.dumps(aps_todas, indent=2))
-    pd.DataFrame(detalles).to_csv(salida / f"eval_real_{args.split}_por_imagen.csv", index=False)
+    df.to_csv(salida / f"eval_{nombre_dataset}_{args.split}.csv", index=False, float_format="%.4f")
+    (salida / f"eval_{nombre_dataset}_{args.split}_ap_por_valor.json").write_text(json.dumps(aps_todas, indent=2))
+    pd.DataFrame(detalles).to_csv(salida / f"eval_{nombre_dataset}_{args.split}_por_imagen.csv", index=False)
 
     print("\nResumen (promedio de las variantes):")
     print(df.groupby("config")[["mAP50", "F1", "R_loc", "cartas_ok", "puntaje_ok", "ms_imagen"]].mean().round(3))

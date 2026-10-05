@@ -59,7 +59,7 @@ mano del Jugador ─► MediaPipe (21 puntos) ─► pose ─► gesto ───
 ├── YOLO - 13/                   pipeline A: train_yolo_13.py, dataset y pesos (runs/)
 ├── YOLO - 1/                    pipeline B (detector): train_yolo_1.py, dataset y pesos (runs/)
 ├── CNN - 13/                    pipeline B (clasificador): train_cnn_13.py, dataset de recortes y pesos (runs/)
-├── Dataset Real/                fotos reales: dataset público (teogopk/) y guía para sacar fotos propias
+├── Dataset Real/                fotos reales: teogopk/ (público), roboflow/ (propio), extraer_cuadros.py, prelabel.py y guía
 ├── Experimentos/                evaluación en fotos reales y fine-tuning
 │   ├── evaluar_real.py
 │   ├── finetune_real.py
@@ -131,6 +131,9 @@ muestra su id de track (`#12 Q 0.91`), las esquinas recordadas aparecen en gris 
 porcentaje de los últimos cuadros coincide con la mano mostrada. Con seguimiento conviene `--conf 0.3`, porque
 ByteTrack aprovecha también las detecciones de baja confianza.
 
+Por defecto se usan los pesos ajustados con fotos propias del escenario de la demo, si existen (`--pesos auto`). Con
+`--pesos base|real|propio` se eligen a mano (ver experimento 3b).
+
 Para mejorar la detección: luz pareja, cámara a 30–60 cm y cenital, y la esquina con el índice visible.
 
 ### Jugar una partida
@@ -176,6 +179,7 @@ la mano del crupier repartiendo no dispara nada.
 | **Dataset YOLO - 1** | Entrenar YOLO-1 | Roboflow `julian-segundo-blanco/dataset-b-5f2kh` v1 (proyecto privado; el dataset completo está en este repo) | Mismas imágenes, clase única `card-corner` |
 | **Dataset CNN-13** | Entrenar CNN-13 | Recortes de las cajas del Dataset YOLO 13 con 10% de margen (`YOLO - 13/Dataset YOLO 13/create_cnn_dataset.py`) | 28.280 / 8.080 / 4.040 recortes, balanceado |
 | **Dataset Real (teogopk)** | Test real y fine-tuning | [TeogopK/Playing-Cards-Object-Detection](https://github.com/TeogopK/Playing-Cards-Object-Detection), `data/real_dataset` (CC0) | 98 fotos reales 416×416: 69 / 18 / 11 |
+| **Dataset Real (propio)** | Test y fine-tuning en el escenario de la demo | Cuadros de 4 sesiones de juego grabadas con `--guardar-crudo`, etiquetados en Roboflow ([`rodolfo-di-chiazza/tp2-vision-por-computadora-ii` v2](https://universe.roboflow.com/rodolfo-di-chiazza/tp2-vision-por-computadora-ii/dataset/2), CC BY 4.0) | 130 cuadros 508×720, 1.688 esquinas: 79 / 21 / 30 |
 
 **Datasets sintéticos:** los dos datasets de entrenamiento se armaron a partir del dataset sintético
 [Playing Cards (Augmented Startups)](https://universe.roboflow.com/augmented-startups/playing-cards-ow27d), que tiene
@@ -197,6 +201,7 @@ falta descargar nada para reentrenar o evaluar:
 | YOLO - 1 | `YOLO - 1/Dataset YOLO - 1/` |
 | CNN-13 | `CNN - 13/Dataset CNN-13/` (también se regenera con `create_cnn_dataset.py`) |
 | teogopk | `Dataset Real/teogopk/` |
+| propio | `Dataset Real/roboflow/` |
 
 Los enlaces de Roboflow quedan como referencia de dónde se armaron los datasets. El del dataset de YOLO-1 es un
 proyecto privado, por eso no lleva enlace, pero su contenido completo está en `YOLO - 1/Dataset YOLO - 1/`.
@@ -379,20 +384,66 @@ Resultado en el **test real** (11 fotos que no se usaron ni para entrenar ni par
   esquinas (R_loc 0,89), pero la CNN sigue limitando el resultado. En el valid real pasa de 83,7% a 89,8% de
   exactitud, lejos de lo que logra YOLO-13.
 
-**Pero el fine-tuning no se generaliza a otro mazo.** Las fotos propias del mazo de la demo (Bicycle Dragon, un
-diseño distinto al de teogopk) son la prueba:
+**Pero el fine-tuning no se generaliza a otro mazo.** Las 4 fotos de prueba (mazo Bicycle Dragon, un diseño distinto
+al de teogopk) son la prueba:
 
-| Modelo | Fotos propias: manos correctas /16 (conf 0,5 / 0,3 / 0,2) | Test sintético: mAP50-95 |
+| Modelo | 4 fotos de prueba: manos correctas /16 (conf 0,5 / 0,3 / 0,2) | Test sintético: mAP50-95 |
 |---|---|---|
 | A base | **15 / 15 / 16** | **0,989** |
 | A_ft | 12 / 14 / 15 | 0,957 |
 
-Con fine-tuning, A pierde las esquinas medio tapadas de `ACES_TAPADOS` y tiene confianzas más bajas con el mazo
-nuevo. Además olvida un poco el dominio sintético. Hay dos conclusiones:
-1. **Ajustar con fotos reales sirve, pero hay que hacerlo con fotos del mazo y la mesa donde se va a usar el
-   sistema.** Con 69 fotos de otro mazo, el modelo se especializa en ese mazo.
-2. **La aplicación usa por defecto los pesos base**, que rinden mejor con el mazo de la demo. Los ajustados se eligen
-   con `--finetune`.
+Con fine-tuning, A pierde las esquinas medio tapadas de `ACES_TAPADOS` y tiene confianzas más bajas con ese mazo.
+Además olvida un poco el dominio sintético. La conclusión es que **ajustar con fotos reales sirve, pero hay que
+hacerlo con fotos del mazo y la mesa donde se va a usar el sistema**: con 69 fotos de otro mazo, el modelo se
+especializa en ese mazo. Esto motivó el experimento siguiente.
+
+### 3b. Fine-tuning con fotos propias (el escenario de la demo)
+
+Se grabaron 4 sesiones de juego con la cámara de la demo (un celular en vertical, como webcam), usando
+`--guardar-crudo`. De ahí se extrajeron 130 cuadros con `Dataset Real/extraer_cuadros.py`: uno cada 1,5 s, sin
+repetidos ni movidos y sin las franjas negras. Los cuadros se pre-etiquetaron con YOLO-13 y se corrigieron a mano en
+Roboflow.
+
+El dataset propio quedó con **1.688 esquinas**:
+- **train:** 79 cuadros, de 2 sesiones.
+- **valid:** 21 cuadros, de 1 sesión.
+- **test:** 30 cuadros, de **otra sesión**, con 412 esquinas.
+
+Son mesas con muchas cartas, superpuestas y medio tapadas, en `Dataset Real/roboflow/`. El fine-tuning
+(`--dataset propio`) usa la misma receta que con teogopk.
+
+Resultados en el **test propio** (30 cuadros de una sesión que no se usó para entrenar), imagen original:
+
+| Configuración | mAP50 | Precisión | Recall | F1 | Latencia (CPU) |
+|---|---|---|---|---|---|
+| A: YOLO-13 base | 0,86 | 0,95 | 0,66 | 0,78 | 117 ms |
+| A_ft: ajustado con teogopk | 0,91 | 0,93 | 0,67 | 0,78 | 108 ms |
+| **A_propio: ajustado con fotos propias** | **0,99** | **0,96** | **0,96** | **0,96** | 111 ms |
+| B: YOLO-1 + CNN-13 base | 0,82 | 0,99 | 0,64 | 0,78 | 144 ms |
+| B_ft: ajustado con teogopk | 0,90 | 0,95 | 0,73 | 0,83 | 148 ms |
+| B_propio: ajustado con fotos propias | 0,94 | 0,92 | 0,93 | 0,93 | 155 ms |
+
+Promedio de las 4 variantes: A_propio 0,95 de mAP50 y 0,91 de F1, contra 0,86 y 0,78 del base. B_propio queda en 0,91
+y 0,88.
+
+- **Con fotos del escenario real, el recall pasa de 0,66 a 0,96.** El modelo base casi no se equivoca
+  (precisión 0,95), pero en mesas con muchas cartas amontonadas pierde un tercio de las esquinas. Con fotos propias
+  las encuentra casi todas, sin perder precisión. El ajuste con teogopk, otro mazo, casi no cambia el recall
+  (0,66 → 0,67).
+- **A sigue siendo mejor que B** también después de ajustar los dos con los mismos datos, y es ~40 ms más rápido.
+  La CNN-13 ya clasificaba bien este mazo (97,9% de exactitud en el valid propio antes de ajustar, 98,7% después).
+  La mejora de B viene sobre todo del detector.
+- **Especialización en la orientación:** todas las fotos propias se grabaron con el celular en vertical. Con la
+  imagen rotada 90°, A_propio baja a 0,82 de F1, un poco por debajo del base (0,84). Para jugar con la cámara en
+  horizontal habría que sumar una sesión grabada así.
+- **Fuera del escenario no empeora:** con las 4 fotos de prueba del mazo Bicycle Dragon, A_propio empata con el base
+  (15/16 manos correctas, con confianza 0,5).
+- **Manos (`cartas_ok`):** pasan de 7% a 30% en la imagen original. Siguen bajas porque en estos cuadros hay 8 a 12
+  cartas por mesa y basta una esquina mal para fallar la mano. En una mano real de Blackjack (2 a 5 cartas por lado),
+  el sistema anda bien, como se vio al jugar.
+
+**Decisión:** la aplicación usa por defecto los pesos ajustados con fotos propias si existen (`--pesos auto`), y si
+no, los base. También se pueden elegir con `--pesos base|real|propio`.
 
 ### 4. Robustez (fotos propias del mazo Bicycle Dragon)
 
@@ -488,9 +539,10 @@ Los videos quedan en `videos/partida_simulada*.mp4`.
 ### Cómo reproducir
 
 ```bash
-python Experimentos/evaluar_real.py                       # pesos base (y fine-tuning si existe)
-python Experimentos/finetune_real.py --modelo todos       # --device mps en la Mac
-python Experimentos/evaluar_real.py                       # agrega A_ft y B_ft
+python Experimentos/evaluar_real.py --dataset teogopk                 # pesos base (y fine-tunings si existen)
+python Experimentos/finetune_real.py --dataset teogopk --modelo todos # pesos *-finetune-real (--device mps en la Mac)
+python Experimentos/evaluar_real.py --dataset propio                  # test con fotos del mazo de la demo
+python Experimentos/finetune_real.py --dataset propio --modelo todos  # pesos *-finetune-propio
 python Experimentos/evaluar_real.py --dataset <otro export YOLO> --split test
 python Experimentos/evaluar_seguimiento.py                # genera los videos si faltan
 python Gestos/evaluar_gestos.py                           # baja HaGRID (400 imágenes) la primera vez
@@ -505,9 +557,12 @@ python -m pytest tests
 
 - **Dataset real chico:** el test real de teogopk tiene 11 fotos, de un solo palo y con un mazo de índices en las
   cuatro esquinas. Por eso las métricas de "manos" (`cartas_ok`) no son confiables con ese dataset; sirven las
-  métricas por esquina. Un test propio con el mazo de la demo daría un número más representativo.
-- **Fine-tuning con otro mazo:** el ajuste con teogopk (un solo palo, otro diseño) no se generaliza al mazo de la demo.
-  El próximo paso es ajustar con ~100 fotos propias, siguiendo la guía de `Dataset Real/README.md`.
+  métricas por esquina. El test propio (30 cuadros, 412 esquinas) es más representativo.
+- **Fine-tuning con otro mazo:** el ajuste con teogopk (un solo palo, otro diseño) no se generaliza a otro mazo. El
+  ajuste con fotos propias sí funciona (recall de 0,66 a 0,96), pero queda especializado en ese mazo, esa mesa y la
+  cámara en vertical.
+- **Test propio de una sola sesión:** las 30 fotos de test son de una sesión distinta a las de entrenamiento, pero
+  del mismo mazo y la misma mesa. Faltaría medir con otra mesa y otra iluminación.
 - **Espejado en YOLO:** los YOLO se entrenaron con espejado horizontal (`fliplr=0.5`, el valor por defecto), que
   genera índices espejados que no existen en un mazo real. Probar `fliplr=0` es una mejora pendiente.
 - **Cartas tapadas:** si las dos esquinas de una carta quedan tapadas, la carta no se cuenta. Si una carta tiene las
