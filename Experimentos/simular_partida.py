@@ -78,7 +78,7 @@ def recortar_cartas():
                "ACES.jpeg": {"A": None}}
     cartas = {}
     for foto, nombres in fuentes.items():
-        img = cv2.imread(str(REPO / foto))
+        img = cv2.imread(str(REPO / "Fotos_prueba" / foto))
         completas = [c for c in emparejar_esquinas(det.detectar(img))[0] if c.completa]
         ases = 0
         for c in sorted(completas, key=lambda c: (c.centro[1] > img.shape[0] / 2, c.centro[0])):
@@ -90,14 +90,14 @@ def recortar_cartas():
                 ases += 1
             elif c.rank in nombres:
                 cartas[c.rank] = recorte
-    prueba = cv2.imread(str(REPO / "prueba.jpeg"))
+    prueba = cv2.imread(str(REPO / "Fotos_prueba" / "prueba.jpeg"))
     cartas["DORSO"] = prueba[22:272, 758:940].copy()           # carta boca abajo de prueba.jpeg
     return cartas
 
 
 def fondo_marmol():
     """Fondo de mesa: un parche limpio de prueba.jpeg repetido en espejo."""
-    parche = cv2.imread(str(REPO / "prueba.jpeg"))[320:880, 1000:1340]
+    parche = cv2.imread(str(REPO / "Fotos_prueba" / "prueba.jpeg"))[320:880, 1000:1340]
     fila = np.hstack([parche, cv2.flip(parche, 1)] * 3)
     mosaico = np.vstack([fila, cv2.flip(fila, 0)])
     return cv2.resize(mosaico[:, :], (ANCHO, ALTO))

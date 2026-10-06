@@ -22,7 +22,7 @@ sys.path.insert(0, str(REPO / "Identificador_Cartas"))
 import identificador_cartas as I   # noqa: E402
 from detectores import crear_detector   # noqa: E402
 
-VIDEOS = {  # foto -> mano real "Casa|Jugador"
+VIDEOS = {  # foto (en Fotos_prueba/) -> mano real "Casa|Jugador"
     "prueba.jpeg": "Q|7 K",
     "ACES.jpeg": "A|A A",
     "aces torcidos.jpeg": "A|A A",
@@ -45,7 +45,7 @@ def main():
             video = carpeta / (Path(foto).stem.replace(" ", "_") + ".mp4")
             if not video.exists():
                 subprocess.run([sys.executable, str(REPO / "Experimentos" / "generar_video_prueba.py"),
-                                "--foto", foto, "--salida", str(video)], check=True)
+                                "--foto", str(REPO / "Fotos_prueba" / foto), "--salida", str(video)], check=True)
             for seguir in (False, True):
                 ns = argparse.Namespace(camara=None, video=str(video), guardar=None, sin_ventana=True,
                                         sin_seguimiento=not seguir, ventana=15, memoria=10,

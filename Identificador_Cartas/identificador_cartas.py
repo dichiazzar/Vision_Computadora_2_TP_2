@@ -9,8 +9,8 @@
    muestra la mano más frecuente de los últimos cuadros, para que el resultado no parpadee.
 
 Uso (desde la carpeta del repo o desde Identificador_Cartas/):
-    python Identificador_Cartas/identificador_cartas.py --imagen prueba.jpeg
-    python Identificador_Cartas/identificador_cartas.py --imagen ACES_TAPADOS.jpeg --pipeline B
+    python Identificador_Cartas/identificador_cartas.py --imagen Fotos_prueba/prueba.jpeg
+    python Identificador_Cartas/identificador_cartas.py --imagen Fotos_prueba/ACES_TAPADOS.jpeg --pipeline B
     python Identificador_Cartas/identificador_cartas.py --camara 0
     python Identificador_Cartas/identificador_cartas.py --video partida.mp4 --guardar salida.mp4
     python Identificador_Cartas/identificador_cartas.py --video prueba.mp4 --esperado "Q|7 K" --sin-ventana

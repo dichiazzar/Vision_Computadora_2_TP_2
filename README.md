@@ -75,7 +75,7 @@ mano del Jugador ─► MediaPipe (21 puntos) ─► pose ─► gesto ───
 │   └── resultados/              CSV con las métricas
 ├── videos/                      videos de prueba generados (se regeneran con generar_video_prueba.py)
 ├── tests/                       tests unitarios (reglas y gestos): python -m pytest tests
-├── *.jpeg                       4 fotos de prueba del mazo propio (Bicycle Dragon)
+├── Fotos_prueba/                4 fotos de prueba del mazo propio (Bicycle Dragon)
 ├── COMO_JUGAR.md                guía para jugar una partida
 └── requirements.txt
 ```
@@ -115,19 +115,19 @@ Ejecutar desde la raíz del repositorio:
 
 ```bash
 # una foto (abre una ventana con el resultado)
-python Identificador_Cartas/identificador_cartas.py --imagen prueba.jpeg
-python Identificador_Cartas/identificador_cartas.py --imagen ACES_TAPADOS.jpeg --pipeline B
+python Identificador_Cartas/identificador_cartas.py --imagen Fotos_prueba/prueba.jpeg
+python Identificador_Cartas/identificador_cartas.py --imagen Fotos_prueba/ACES_TAPADOS.jpeg --pipeline B
 
 # cámara en vivo (q sale, r reinicia la mano) o un video, guardando el resultado
 python Identificador_Cartas/identificador_cartas.py --camara 0 --conf 0.3
 python Identificador_Cartas/identificador_cartas.py --video partida.mp4 --conf 0.3 --guardar salida.mp4
 
 # video de prueba sin cámara: se genera a partir de una foto y se mide contra la mano real
-python Experimentos/generar_video_prueba.py --foto prueba.jpeg --salida videos/prueba.mp4
+python Experimentos/generar_video_prueba.py --foto Fotos_prueba/prueba.jpeg --salida videos/prueba.mp4
 python Identificador_Cartas/identificador_cartas.py --video videos/prueba.mp4 --conf 0.3 --esperado "Q|7 K"
 
 # sin ventana: solo imprime y guarda
-python Identificador_Cartas/identificador_cartas.py --imagen prueba.jpeg --sin-ventana --guardar out.jpg
+python Identificador_Cartas/identificador_cartas.py --imagen Fotos_prueba/prueba.jpeg --sin-ventana --guardar out.jpg
 ```
 
 Ejemplo de salida para `prueba.jpeg`:

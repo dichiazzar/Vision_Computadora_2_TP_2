@@ -8,7 +8,7 @@ El movimiento es chico, así que cada carta sigue del mismo lado (Casa arriba / 
 es la misma en todo el video y se puede pasar con --esperado al identificador.
 
 Uso (desde la carpeta del repo):
-    python Experimentos/generar_video_prueba.py --foto prueba.jpeg --salida videos/prueba.mp4
+    python Experimentos/generar_video_prueba.py --foto Fotos_prueba/prueba.jpeg --salida videos/prueba.mp4
     python Identificador_Cartas/identificador_cartas.py --video videos/prueba.mp4 --esperado "Q|7 K" --sin-ventana
 """
 
@@ -45,7 +45,7 @@ def desenfoque_movimiento(img, dx, dy):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--foto", default="prueba.jpeg")
+    ap.add_argument("--foto", default="Fotos_prueba/prueba.jpeg")
     ap.add_argument("--salida", default=str(REPO / "videos" / "prueba.mp4"))
     ap.add_argument("--segundos", type=float, default=10)
     ap.add_argument("--fps", type=int, default=15)

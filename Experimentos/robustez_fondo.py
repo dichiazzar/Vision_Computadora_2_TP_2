@@ -107,7 +107,7 @@ def mosaico(parche, h, w):
 
 def fondo_real(nombre, h, w):
     if nombre == "marmol":
-        return mosaico(cv2.imread(str(REPO / "prueba.jpeg"))[320:880, 1000:1340], h, w)
+        return mosaico(cv2.imread(str(REPO / "Fotos_prueba" / "prueba.jpeg"))[320:880, 1000:1340], h, w)
     if nombre == "madera":    # mesa de las partidas reales: un cuadro con la mesa vacía, antes del reparto
         cap = cv2.VideoCapture(str(REPO / "Experimentos" / "partidas_reales" / "crudo_9.mp4"))
         for _ in range(40):   # los primeros cuadros son negros (la cámara recién arranca)

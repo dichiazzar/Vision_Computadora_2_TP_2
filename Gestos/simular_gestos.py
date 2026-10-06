@@ -78,7 +78,7 @@ def main():
     args = ap.parse_args()
 
     rng = np.random.default_rng(args.seed)
-    mesa = cv2.imread(str(REPO / "prueba.jpeg"))
+    mesa = cv2.imread(str(REPO / "Fotos_prueba" / "prueba.jpeg"))
     # cuadro de 640x360 con la mano de ~1/3 del alto: la proporción de una cámara a 40-60 cm de la mesa
     # (MediaPipe busca palmas en una versión reducida del cuadro: lo que importa es el tamaño RELATIVO)
     mesa = cv2.resize(mesa, (640, 360))
