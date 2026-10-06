@@ -66,6 +66,8 @@ mano del Jugador ─► MediaPipe (21 puntos) ─► pose ─► gesto ───
 │   ├── evaluar_seguimiento.py   experimento de seguimiento en video
 │   ├── generar_video_prueba.py  video de "cámara en mano" a partir de una foto
 │   ├── simular_partida.py       partidas completas simuladas con cartas y manos reales
+│   ├── verificar_partidas.py    prueba de regresión con partidas reales grabadas
+│   ├── partidas_reales/         videos crudos de partidas reales + registro.yaml con el resultado esperado
 │   ├── clases.py                normaliza nombres de clase de otros datasets ('10h', 'AS'...) a valores
 │   └── resultados/              CSV con las métricas
 ├── videos/                      videos de prueba generados (se regeneran con generar_video_prueba.py)
@@ -557,6 +559,29 @@ la mesa y los reconoce el sistema. Las 3 manos de prueba son:
 
 Los videos quedan en `videos/partida_simulada*.mp4`.
 
+### 9. Partidas reales (prueba de regresión)
+
+`Experimentos/partidas_reales/` guarda partidas jugadas de verdad con la cámara de la demo, grabadas con
+`--guardar-crudo`. En `registro.yaml` está el resultado esperado de cada una, verificado contra el panel que se vio
+en vivo: ganador, cartas finales, puntajes, gestos e irregularidades. `verificar_partidas.py` reproduce cada video
+por la cadena completa (detector, seguimiento, reglas y gestos) y comprueba que dé exactamente lo mismo.
+
+| Partida | Mano | Resultado |
+|---|---|---|
+| crudo_9 | 6+8 contra K; pide un 6 y se planta con 20; la Casa llega a 17 (K+4+3) | Gana el Jugador 20 a 17 |
+| crudo_10 | 5+A (16 blando) contra 9; pide un 9 y el As pasa a valer 1 (15); la Casa llega a 17 | Gana la Casa 17 a 15 |
+| crudo_11 | A+5 (16 blando) contra K; pide un 6 y el As pasa a valer 1 (12); la Casa llega a 20 | Gana la Casa 20 a 12 |
+| crudo_12 | A+5 contra K; pide un 5 girado y llega a 21 (se planta solo); la Casa llega a 20 | Gana el Jugador 21 a 20 |
+
+**4/4 partidas reales dan el resultado esperado, sin irregularidades.** Cada una tarda ~40 s en reproducirse en CPU.
+Para confirmar que la prueba detecta errores de verdad, se rompió a propósito la regla del As (que valga siempre 1):
+`crudo_12` falla y muestra qué cambió (21 → 11, no se planta solo, sin ganador).
+
+```bash
+python Experimentos/verificar_partidas.py                                   # verificar todas antes de cada cambio
+python Experimentos/verificar_partidas.py --agregar videos/crudo_13.mp4 --ganador CASA --descripcion "..."
+```
+
 ### Cómo reproducir
 
 ```bash
@@ -569,6 +594,7 @@ python Experimentos/evaluar_seguimiento.py                # genera los videos si
 python Gestos/evaluar_gestos.py                           # baja HaGRID (400 imágenes) la primera vez
 python Gestos/simular_gestos.py
 python Experimentos/simular_partida.py [--gestos]
+python Experimentos/verificar_partidas.py                 # partidas reales grabadas (prueba de regresión)
 python -m pytest tests
 ```
 

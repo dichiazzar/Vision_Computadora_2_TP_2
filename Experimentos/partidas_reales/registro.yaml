@@ -1,0 +1,80 @@
+# Partidas reales para la prueba de regresión (ver Experimentos/verificar_partidas.py).
+# El resultado esperado se verificó contra el panel que se vio en vivo.
+partidas:
+- nombre: crudo_9
+  video: crudo_9.mp4
+  descripcion: reparto 6+8 contra K; pide (6) y se planta con 20; la Casa llega a
+    17 (K+4+3)
+  esperado:
+    ganador: JUGADOR
+    jugador:
+    - '6'
+    - '6'
+    - '8'
+    casa:
+    - '3'
+    - '4'
+    - K
+    puntaje_jugador: 20
+    puntaje_casa: 17
+    gestos:
+    - PEDIR
+    - PLANTARSE
+    irregularidades: []
+- nombre: crudo_10
+  video: crudo_10.mp4
+  descripcion: reparto 5+A (16 blando) contra 9; pide un 9 y el As pasa a valer 1
+    (15); la Casa llega a 17 (9+8)
+  esperado:
+    ganador: CASA
+    jugador:
+    - '5'
+    - '9'
+    - A
+    casa:
+    - '8'
+    - '9'
+    puntaje_jugador: 15
+    puntaje_casa: 17
+    gestos:
+    - PEDIR
+    - PLANTARSE
+    irregularidades: []
+- nombre: crudo_11
+  video: crudo_11.mp4
+  descripcion: reparto A+5 (16 blando) contra K; pide un 6 y el As pasa a valer 1
+    (12); la Casa llega a 20 (K+Q)
+  esperado:
+    ganador: CASA
+    jugador:
+    - '5'
+    - '6'
+    - A
+    casa:
+    - K
+    - Q
+    puntaje_jugador: 12
+    puntaje_casa: 20
+    gestos:
+    - PEDIR
+    - PLANTARSE
+    irregularidades: []
+- nombre: crudo_12
+  video: crudo_12.mp4
+  descripcion: reparto A+5 contra K; pide un 5 girado ~20 grados y llega a 21 (se
+    planta solo); la Casa llega a 20 (K+Q)
+  esperado:
+    ganador: JUGADOR
+    jugador:
+    - '5'
+    - '5'
+    - A
+    casa:
+    - K
+    - Q
+    puntaje_jugador: 21
+    puntaje_casa: 20
+    gestos:
+    - PEDIR
+    - PLANTA_21
+    irregularidades: []
