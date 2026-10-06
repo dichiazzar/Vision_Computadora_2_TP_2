@@ -207,8 +207,9 @@ def ejemplos(muestras, salida):
         for _, x1, y1, x2, y2 in g:
             cv2.rectangle(im, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
         im = cv2.resize(im, (300, int(300 * im.shape[0] / im.shape[1])))
-        cv2.putText(im, titulo, (6, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 4, cv2.LINE_AA)
-        cv2.putText(im, titulo, (6, 22), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
+        (tw, th), _ = cv2.getTextSize(titulo, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
+        cv2.rectangle(im, (0, 0), (tw + 12, th + 14), (0, 0, 0), -1)
+        cv2.putText(im, titulo, (6, th + 7), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1, cv2.LINE_AA)
         tiles.append(im)
     alto = max(t.shape[0] for t in tiles)
     tiles = [cv2.copyMakeBorder(t, 0, alto - t.shape[0], 0, 0, cv2.BORDER_CONSTANT) for t in tiles]

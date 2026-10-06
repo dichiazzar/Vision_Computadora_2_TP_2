@@ -29,3 +29,11 @@ Dataset Real/para_roboflow/
 *_log.txt
 CNN - 13/runs/train_log.txt
 Experimentos/robustez_fondo_data/
+
+# Auxiliares de LaTeX (el PDF del paper sí se versiona)
+Paper/*.aux
+Paper/*.log
+Paper/*.bbl
+Paper/*.blg
+Paper/*.out
+Paper/*.synctex.gz
