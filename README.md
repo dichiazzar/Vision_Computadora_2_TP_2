@@ -67,6 +67,9 @@ mano del Jugador ─► MediaPipe (21 puntos) ─► pose ─► gesto ───
 │   ├── generar_video_prueba.py  video de "cámara en mano" a partir de una foto
 │   ├── simular_partida.py       partidas completas simuladas con cartas y manos reales
 │   ├── verificar_partidas.py    prueba de regresión con partidas reales grabadas
+│   ├── robustez.py              rotación, oclusión e iluminación (alcance acordado con el profesor)
+│   ├── robustez_fondo.py        fondo: escenas compuestas con cartas reales del mazo de la demo
+│   ├── confusiones.py           qué valores se confunden y qué esquinas no se encuentran
 │   ├── partidas_reales/         videos crudos de partidas reales + registro.yaml con el resultado esperado
 │   ├── clases.py                normaliza nombres de clase de otros datasets ('10h', 'AS'...) a valores
 │   └── resultados/              CSV con las métricas
@@ -582,6 +585,110 @@ python Experimentos/verificar_partidas.py                                   # ve
 python Experimentos/verificar_partidas.py --agregar videos/crudo_13.mp4 --ganador CASA --descripcion "..."
 ```
 
+### 10. Robustez ante rotación, oclusión, iluminación y fondo
+
+Es el **alcance principal acordado con el profesor**: medir cómo cambia el desempeño ante distintas condiciones. El
+diseño viene de la notebook de Cristhian Pettico.
+- **Mismas imágenes para todos:** cada perturbación se aplica a varios niveles de severidad sobre un conjunto fijo de
+  imágenes, y **todas las configuraciones ven exactamente la misma imagen perturbada** (semilla fija por condición e
+  imagen).
+- **Cajas reales transformadas:** al rotar, las cajas reales giran junto con la imagen.
+- **Métricas:** F1 y mAP50, con una esquina contada como acierto si coincide con la real (IoU ≥ 0,5) y tiene el valor
+  correcto, más R_loc (si encontró la esquina, sin importar el valor).
+
+Se evaluaron 4 configuraciones (A y B, base y ajustadas con fotos propias) en dos dominios:
+- **Test propio:** 30 cuadros reales, 412 esquinas.
+- **Test sintético:** una muestra fija de 100 imágenes, 400 esquinas.
+
+| Familia | Perturbación | Niveles |
+|---|---|---|
+| Rotación | Giro alrededor del centro | 15°, 30°, 45°, 90°, 135°, 180° |
+| Oclusión | Rectángulo sobre cada índice, desde un borde al azar | 10% a 60% del índice |
+| Iluminación | Brillo global / contraste / sombra (gradiente de luz) | ×0,2–×2,5 / ×0,6–×0,15 / luz mínima 60%–10% |
+| Fondo | Escenas compuestas con cartas reales sobre 8 fondos (ver abajo) | madera, verde, oscuro, blanco, textura, desorden, ruido, mármol |
+
+**F1 medio por familia** (promedio de los niveles; sin perturbar entre paréntesis):
+
+| Familia | A | B | **A_propio** | B_propio |
+|---|---|---|---|---|
+| *Test propio, sin perturbar* | *(0,78)* | *(0,78)* | ***(0,96)*** | *(0,93)* |
+| Rotación (IoU ≥ 0,5) | 0,76 | 0,72 | **0,81** | 0,81 |
+| Oclusión | 0,28 | 0,22 | **0,52** | 0,46 |
+| Iluminación | 0,69 | 0,58 | **0,88** | 0,82 |
+| *Test sintético, sin perturbar* | *(1,00)* | *(1,00)* | *(1,00)* | *(1,00)* |
+| Rotación (IoU ≥ 0,5) | 0,74 | 0,72 | 0,74 | 0,71 |
+| Oclusión | **0,74** | 0,63 | 0,72 | 0,61 |
+| Iluminación | **0,99** | 0,98 | 0,99 | 0,98 |
+
+Gráficos por nivel: `Experimentos/resultados/robustez_propio.png` y `robustez_sintetico.png`. Ejemplos de cada
+perturbación: `robustez_*_ejemplos.jpg`.
+
+**Lo que muestran:**
+
+1. **Oclusión: es la perturbación más dañina.** En el sintético, A tolera hasta el 30% del índice tapado (F1 0,95) y
+   cae a 0,52 con el 50%. En las fotos reales el modelo base ya pierde con el 10% (F1 0,62), porque esas mesas ya
+   tienen muchas cartas tapadas. El ajustado con fotos propias aguanta el 10–20% (F1 0,93 / 0,89). Con el 50% o más,
+   ningún modelo reconoce el índice. Eso motivó, en la aplicación, contar como carta una esquina suelta (la otra puede
+   estar tapada), la memoria del seguimiento y congelar la mesa mientras hay una mano encima.
+2. **Iluminación: en datos reales importa mucho más que en los sintéticos.** En el sintético los modelos son casi
+   inmunes (F1 ≥ 0,98), porque Roboflow ya aplicó cambios de brillo al exportar ese dataset. En las fotos reales, la
+   poca luz (brillo ×0,2) y el contraste muy bajo (×0,15) son lo más difícil:
+   - **B no tolera la poca luz:** con brillo ×0,2, F1 = **0,00** (base y ajustado), mientras que A_propio conserva 0,58.
+   - **Contraste ×0,15:** A base cae a 0,24 y A_propio mantiene 0,67.
+   - **Las sombras casi no afectan:** con luz mínima del 10%, A_propio da 0,92.
+
+   El fine-tuning con fotos propias mejora la robustez a la iluminación en +0,19 de F1 medio para A.
+3. **Rotación: la caída a 30°, 45° y 135° es en gran parte un efecto de la medición.** Al rotar, la caja real pasa a
+   ser la caja alineada que contiene el índice girado, más grande que la caja ajustada que predice el modelo, y el
+   IoU no llega a 0,5 aunque la detección sea correcta. Repitiendo la medición con **IoU ≥ 0,3**
+   (`robustez_*_iou30.csv`):
+   - **Sintético:** F1 ≥ 0,96 en **todos** los ángulos, en las 4 configuraciones. Los modelos son robustos a la
+     rotación, y la caída a 0,46 con IoU ≥ 0,5 era solo de la medición.
+   - **Fotos reales:** queda una caída genuina en los ángulos oblicuos. A_propio pasa de 0,96 (0°) a 0,84 (45°) y
+     0,83 (135°), y queda en 0,92 a 180°.
+
+   Que 90° y 180° den bien coincide con que el emparejamiento de esquinas maneja cartas verticales y horizontales.
+4. **Fondo: casi no afecta.** Reemplazar el fondo de una foto con una máscara de color no es confiable: separar
+   "papel blanco" del fondo falla con mesas claras y figuras de color. Por eso se compusieron escenas: **7 cartas
+   reales del mazo de la demo**, recortadas con su contorno exacto del último cuadro de las partidas reales, pegadas
+   sobre 8 fondos. Son 30 escenas por fondo, con **las mismas cartas, posiciones y rotaciones en todos los fondos**
+   (244 esquinas por fondo), así que solo cambia el fondo:
+
+   | Fondo | madera | verde | oscuro | blanco | textura | desorden | ruido | mármol |
+   |---|---|---|---|---|---|---|---|---|
+   | A | 0,99 | 1,00 | 1,00 | 0,99 | 1,00 | 1,00 | 0,99 | 1,00 |
+   | B | 0,98 | 0,99 | 0,99 | **0,90** | 0,97 | 0,97 | 0,98 | 0,99 |
+   | A_propio | 0,99 | 0,99 | 0,99 | 0,98 | 0,99 | 0,99 | 0,99 | 0,99 |
+   | B_propio | 1,00 | 1,00 | 1,00 | 1,00 | 1,00 | 1,00 | 0,99 | 1,00 |
+
+   El único fondo que afecta es el **blanco** (del color de la carta) para **B base**: su detector de una clase
+   encuentra solo el 83% de las esquinas. Con cartas separadas, A da ~1,00 sobre cualquier fondo, mientras que en las
+   fotos reales el base daba 0,78. **La dificultad real son las cartas amontonadas y tapadas, no el fondo.**
+
+   *Limitaciones:* son 7 cartas de 6 valores, y las cajas reales de sus esquinas se tomaron de las detecciones de
+   A_propio en el cuadro original, verificadas a ojo. Eso puede favorecer levemente a A_propio.
+
+### 11. Confusiones entre valores
+
+`Experimentos/confusiones.py` cruza cada esquina real con la detección que más se le superpone (IoU ≥ 0,5, sin mirar el
+valor) y separa tres errores: valor equivocado, esquina no encontrada y falso positivo. Resultados en el test propio
+(412 esquinas):
+
+| Configuración | Bien | Valor equivocado | No detectada | Falsos positivos | Confusiones más frecuentes |
+|---|---|---|---|---|---|
+| A | 66,3% | 1,7% | **32,0%** | 5 | 8 → 6 (5), 8 → 9, 6 → 10 |
+| B | 64,1% | 0,2% | **35,7%** | 1 | A → 4 |
+| **A_propio** | **95,6%** | **0%** | 4,4% | 17 | ninguna |
+| B_propio | 93,0% | 2,2% | 4,9% | 24 | 5 → 3 (5), 8 → Q (3) |
+
+- **En fotos reales casi no se confunden valores:** el problema es **no encontrar la esquina**.
+- **El fine-tuning resuelve justamente eso:** las esquinas no detectadas bajan de 32% a 4%.
+- **La carta más difícil es el 8:** se lleva 13 de las 18 esquinas que A_propio no encuentra.
+- **Las confusiones que quedan son de formas parecidas:** 8 ↔ 6 ↔ 9 y 5 ↔ 3, y aparecen sobre todo en B, que clasifica
+  un recorte chico sin contexto.
+
+Matrices de confusión: `Experimentos/resultados/confusiones_propio.png`.
+
 ### Cómo reproducir
 
 ```bash
@@ -595,6 +702,11 @@ python Gestos/evaluar_gestos.py                           # baja HaGRID (400 im�
 python Gestos/simular_gestos.py
 python Experimentos/simular_partida.py [--gestos]
 python Experimentos/verificar_partidas.py                 # partidas reales grabadas (prueba de regresión)
+python Experimentos/robustez.py --dataset propio           # rotación, oclusión e iluminación (~15 min)
+python Experimentos/robustez.py --dataset sintetico --n 100
+python Experimentos/robustez.py --dataset propio --iou 0.3 --familias Rotación
+python Experimentos/robustez_fondo.py                      # fondo con escenas compuestas (~6 min)
+python Experimentos/confusiones.py --dataset propio
 python -m pytest tests
 ```
 

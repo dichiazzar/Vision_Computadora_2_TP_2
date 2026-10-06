@@ -108,6 +108,8 @@ class DetectorB:
         px, py = (x2 - x1) * PADDING_RECORTE, (y2 - y1) * PADDING_RECORTE
         x1, y1 = max(0, int(round(x1 - px))), max(0, int(round(y1 - py)))
         x2, y2 = min(w, int(round(x2 + px))), min(h, int(round(y2 + py)))
+        if x2 <= x1 or y2 <= y1:      # caja degenerada pegada al borde (confianza muy baja): recorte vacío
+            return np.zeros((3, self.img_size, self.img_size), np.float32)
         crop = cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2RGB)
         crop = cv2.resize(crop, (self.img_size, self.img_size), interpolation=cv2.INTER_LINEAR)
         crop = (crop.astype(np.float32) / 255.0 - self.mean) / self.std

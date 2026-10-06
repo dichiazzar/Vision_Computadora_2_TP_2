@@ -162,7 +162,10 @@ def evaluar(detector, muestras, variante, conf_op):
     tiempos, detalle = [], []
 
     for img_path, gts0 in muestras:
-        img, gts = transformar(cv2.imread(str(img_path)), gts0, variante)
+        if callable(variante):        # perturbación arbitraria (Experimentos/robustez.py): (img, gts, ruta) -> (img, gts)
+            img, gts = variante(cv2.imread(str(img_path)), gts0, img_path)
+        else:
+            img, gts = transformar(cv2.imread(str(img_path)), gts0, variante)
         alto = img.shape[0]
 
         detector.conf = CONF_AP
@@ -195,7 +198,7 @@ def evaluar(detector, muestras, variante, conf_op):
         ok_p = casa_gt.puntaje == casa_pr.puntaje and jug_gt.puntaje == jug_pr.puntaje
         cartas_ok += ok_c
         puntaje_ok += ok_p
-        detalle.append(dict(imagen=img_path.name, variante=variante, gt=f"{casa_gt} | {jug_gt}",
+        detalle.append(dict(imagen=img_path.name, variante=getattr(variante, "nombre", variante), gt=f"{casa_gt} | {jug_gt}",
                             pred=f"{casa_pr} | {jug_pr}", cartas_ok=bool(ok_c), puntaje_ok=bool(ok_p)))
 
     aps = {r: average_precision(v, n_gt[r]) for r, v in por_clase.items()}

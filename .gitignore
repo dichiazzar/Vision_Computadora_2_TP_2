@@ -28,3 +28,4 @@ Dataset Real/para_roboflow/
 # ---------------------------------------------------------------- logs
 *_log.txt
 CNN - 13/runs/train_log.txt
+Experimentos/robustez_fondo_data/

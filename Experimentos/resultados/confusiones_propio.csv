@@ -1,0 +1,24 @@
+config,real,predicho,veces
+A,8,6,5
+A,8,9,1
+A,6,10,1
+A,TOTAL,bien,273
+A,TOTAL,valor equivocado,7
+A,TOTAL,no detectada,132
+A,TOTAL,falso positivo,5
+B,A,4,1
+B,TOTAL,bien,264
+B,TOTAL,valor equivocado,1
+B,TOTAL,no detectada,147
+B,TOTAL,falso positivo,1
+A_propio,TOTAL,bien,394
+A_propio,TOTAL,valor equivocado,0
+A_propio,TOTAL,no detectada,18
+A_propio,TOTAL,falso positivo,17
+B_propio,5,3,5
+B_propio,8,Q,3
+B_propio,3,9,1
+B_propio,TOTAL,bien,383
+B_propio,TOTAL,valor equivocado,9
+B_propio,TOTAL,no detectada,20
+B_propio,TOTAL,falso positivo,24
