@@ -85,7 +85,7 @@ mano del Jugador ─► MediaPipe (21 puntos) ─► pose ─► gesto ───
 Requiere Python 3.12.
 
 ```bash
-git clone https://github.com/dichiazzar/Vision_Computadora_2_TP_2.git
+git clone -c core.longpaths=true https://github.com/dichiazzar/Vision_Computadora_2_TP_2.git
 cd Vision_Computadora_2_TP_2
 python -m venv .venv
 .venv\Scripts\activate          # Windows   (Linux/Mac: source .venv/bin/activate)
@@ -94,13 +94,20 @@ pip install --no-deps mediapipe==1.0.1   # gestos: sin dependencias, porque pide
 python -m pytest tests                   # 54 tests de reglas, cartas y gestos
 ```
 
+- **Windows:** el `-c core.longpaths=true` del `git clone` hace falta porque los recortes del dataset CNN-13 tienen
+  nombres largos. Sin esa opción, en carpetas con ruta larga el clon falla con "Filename too long". El repo pesa
+  ~1,6 GB, porque incluye los datasets.
 - **GPU NVIDIA:** instalar la versión de PyTorch con CUDA desde [pytorch.org](https://pytorch.org).
 - **Mac Apple Silicon:** se usa `mps` automáticamente.
 - **Ventanas que no abren:** si aparece `The function is not implemented` al abrir una ventana, es porque hay dos
   OpenCV instalados (`opencv-python` junto con `opencv-python-headless` u `opencv-contrib-python`). Desinstalar
   todos y reinstalar solo `opencv-python`.
 
-Los pesos entrenados ya están en el repositorio, así que se puede usar la aplicación sin entrenar nada.
+Los pesos entrenados y los datasets ya están en el repositorio, así que se puede usar la aplicación y repetir los
+experimentos sin entrenar nada. Lo único que se descarga la primera vez son archivos públicos: los modelos de
+MediaPipe (`Gestos/modelos/`), los pesos preentrenados `yolo11s.pt` (solo para reentrenar) y una muestra de HaGRID
+(solo para los experimentos de gestos). Se verificó clonando el repo en una carpeta limpia: los tests, la
+evaluación, las partidas reales y las confusiones dan los mismos resultados.
 
 ## Uso rápido
 
