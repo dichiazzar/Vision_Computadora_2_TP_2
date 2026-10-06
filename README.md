@@ -240,8 +240,12 @@ evaluar en test sin reentrenar.
      se unen aunque el detector les haya dado valores distintos, y la carta toma el valor de la esquina más
      confiable. Así se corrige la esquina invertida y desenfocada que se lee mal. Los pares del mismo valor siempre
      tienen prioridad.
-   - La distancia entre sus centros, **relativa al tamaño de la esquina**, está entre 4,9 y 7,0 (en las fotos reales
-     da 5,5–6,1). Al ser relativa, no depende de la resolución ni de la altura de la cámara.
+   - La distancia entre sus centros, **relativa al largo de la esquina** (el lado mayor de su caja), está entre 3,3 y
+     4,8. Al ser relativa, no depende de la resolución ni de la altura de la cámara. Se usa el lado mayor y no la raíz
+     del área porque, con la carta girada, la caja del índice se ensancha. En una partida real, un 5 girado ~20°
+     quedaba fuera de la ventana anterior y se contaba dos veces. La ventana se calibró con las 1.688 esquinas
+     etiquetadas del dataset propio: los pares reales se concentran en 3,5–4,5, y las fotos de prueba, con otro mazo y
+     otra cámara, dan ~3,9–4,0.
    - El ángulo de la diagonal es cercano a **50°** si la carta está vertical, o a **140°** si está rotada 90°. La
      orientación se deduce de la forma del índice: más alto que ancho, o al revés.
 

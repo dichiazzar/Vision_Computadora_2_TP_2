@@ -7,11 +7,16 @@ import math
 # En lugar de umbrales en píxeles (que dependen de la resolución y de la altura de la cámara)
 # se usan medidas RELATIVAS al tamaño de la esquina detectada:
 #
-#   ratio = distancia entre centroides / tamaño de la esquina (raíz del área de la bbox)
+#   ratio = distancia entre centroides / largo de la esquina (lado mayor de la bbox)
 #
-# En las fotos de prueba los pares reales dan ratio 5.5 - 6.1, para cualquier distancia a la cámara.
-RATIO_ESPERADO = 5.8
-RATIO_MIN, RATIO_MAX = 4.9, 7.0
+# Se usa el LADO MAYOR y no la raíz del área: cuando la carta está girada, la caja del índice se ensancha y el área
+# crece, la carta "parece más chica" y el ratio cae (un 5 girado ~20° quedaba en 4.84, fuera de la ventana anterior
+# 4.9-7.0, y se contaba como dos cartas). El lado mayor casi no cambia con la rotación.
+# Calibración con las 1.688 esquinas etiquetadas del dataset propio (pares del mismo valor con ángulo compatible):
+# los pares reales se concentran en 3.5-4.5 (pico ~4.0-4.25); las combinaciones falsas quedan en 2.75-3.25 o > 5.
+# Las fotos de prueba (otro mazo y otra cámara) dan ~3.9-4.0: es estable entre mazos y cámaras.
+RATIO_ESPERADO = 4.0
+RATIO_MIN, RATIO_MAX = 3.3, 4.8
 
 # Ángulo de la diagonal (0-180°, medido desde la horizontal, eje y hacia abajo):
 #  - carta vertical (índice más alto que ancho): diagonal "\"  -> ~50°
@@ -40,6 +45,7 @@ class Corner:
         self.ancho = coordenadas[2] - coordenadas[0]
         self.alto = coordenadas[3] - coordenadas[1]
         self.tamanio = math.sqrt(max(self.ancho * self.alto, 1.0))
+        self.largo = max(self.ancho, self.alto, 1.0)      # casi no cambia si la carta está girada
         # El índice (valor + palo) es más alto que ancho cuando la carta está vertical
         self.vertical = self.alto >= self.ancho
 
@@ -49,9 +55,9 @@ class Corner:
     __hash__ = object.__hash__
 
     def longitud_diagonal(self, other):
-        """Distancia entre centroides, en píxeles y relativa al tamaño medio de las dos esquinas."""
+        """Distancia entre centroides, en píxeles y relativa al largo medio de las dos esquinas."""
         distancia = math.dist(self.centroid, other.centroid)
-        ratio = distancia / ((self.tamanio + other.tamanio) / 2)
+        ratio = distancia / ((self.largo + other.largo) / 2)
         return distancia, ratio
 
     def angulo_diagonal(self, other):
