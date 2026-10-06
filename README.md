@@ -2,7 +2,7 @@
 
 **Visión por Computadora II · CEIA-FIUBA (2026)**: Cristhian Pettico, Rodolfo Di Chiazza, Julian Blanco
 
-Este prototipo permite **jugar al Blackjack de verdad** con una cámara cenital sobre la mesa:
+Construimos un prototipo que permite **jugar al Blackjack de verdad** con una cámara cenital sobre la mesa:
 
 - **Cartas:** la cámara reconoce las cartas que se reparten y las asigna a la **Casa** (mitad superior de la imagen)
   o al **Jugador** (mitad inferior).
@@ -12,7 +12,7 @@ Este prototipo permite **jugar al Blackjack de verdad** con una cámara cenital 
 
 También funciona con una sola foto o un video, para leer una mano sin jugar.
 
-El trabajo compara dos formas de reconocer las cartas a partir del **índice de la esquina** (valor y palo). Como en
+Comparamos dos formas de reconocer las cartas a partir del **índice de la esquina** (valor y palo). Como en
 Blackjack el palo no importa, alcanza con distinguir **13 valores**:
 
 | Pipeline | Cómo funciona | Modelos |
@@ -97,21 +97,21 @@ python -m pytest tests                   # 54 tests de reglas, cartas y gestos
 - **Windows:** el `-c core.longpaths=true` del `git clone` hace falta porque los recortes del dataset CNN-13 tienen
   nombres largos. Sin esa opción, en carpetas con ruta larga el clon falla con "Filename too long". El repo pesa
   ~1,6 GB, porque incluye los datasets.
-- **GPU NVIDIA:** instalar la versión de PyTorch con CUDA desde [pytorch.org](https://pytorch.org).
+- **GPU NVIDIA:** hay que instalar la versión de PyTorch con CUDA desde [pytorch.org](https://pytorch.org).
 - **Mac Apple Silicon:** se usa `mps` automáticamente.
 - **Ventanas que no abren:** si aparece `The function is not implemented` al abrir una ventana, es porque hay dos
-  OpenCV instalados (`opencv-python` junto con `opencv-python-headless` u `opencv-contrib-python`). Desinstalar
-  todos y reinstalar solo `opencv-python`.
+  OpenCV instalados (`opencv-python` junto con `opencv-python-headless` u `opencv-contrib-python`). Lo resolvimos
+  desinstalándolos todos y reinstalando solo `opencv-python`.
 
 Los pesos entrenados y los datasets ya están en el repositorio, así que se puede usar la aplicación y repetir los
 experimentos sin entrenar nada. Lo único que se descarga la primera vez son archivos públicos: los modelos de
 MediaPipe (`Gestos/modelos/`), los pesos preentrenados `yolo11s.pt` (solo para reentrenar) y una muestra de HaGRID
-(solo para los experimentos de gestos). Se verificó clonando el repo en una carpeta limpia: los tests, la
-evaluación, las partidas reales y las confusiones dan los mismos resultados.
+(solo para los experimentos de gestos). Lo verificamos clonando el repo en una carpeta limpia: los tests, la
+evaluación, las partidas reales y las confusiones dieron los mismos resultados.
 
 ## Uso rápido
 
-Ejecutar desde la raíz del repositorio:
+Todos los comandos se ejecutan desde la raíz del repositorio:
 
 ```bash
 # una foto (abre una ventana con el resultado)
@@ -160,9 +160,9 @@ python Identificador_Cartas/identificador_cartas.py --camara 0 --conf 0.3 --jueg
 1. **Reparto:** el crupier reparte 2 cartas boca arriba al Jugador (abajo) y 2 a la Casa (arriba), la segunda boca
    abajo. Las instrucciones aparecen abajo a la izquierda y el estado de la partida en el panel de la derecha.
 2. **Turno del Jugador:**
-   - **Pedir carta:** levantar solo el índice, apuntando, durante ~0,5 s. Se ve "APUNTAR -> PEDIR" y una barra de
+   - **Pedir carta:** el Jugador levanta solo el índice, apuntando, durante ~0,5 s. Se ve "APUNTAR -> PEDIR" y una barra de
      avance.
-   - **Plantarse:** mostrar la **palma abierta quieta durante ~1,2 s**, o **pasar la mano abierta** sobre las cartas
+   - **Plantarse:** el Jugador muestra la **palma abierta quieta durante ~1,2 s**, o **pasa la mano abierta** sobre las cartas
      (más rápido). Antes de hacer otro gesto hay que retirar la mano.
    - **Teclado:** `p` pide y `l` se planta, como respaldo o sin `--gestos`.
 3. **Turno de la Casa:** el crupier da vuelta su carta y pide mientras el sistema indique "debe pedir carta". La Casa
@@ -193,7 +193,7 @@ la mano del crupier repartiendo no dispara nada.
 | **Dataset Real (teogopk)** | Test real y fine-tuning | [TeogopK/Playing-Cards-Object-Detection](https://github.com/TeogopK/Playing-Cards-Object-Detection), `data/real_dataset` (CC0) | 98 fotos reales 416×416: 69 / 18 / 11 |
 | **Dataset Real (propio)** | Test y fine-tuning en el escenario de la demo | Cuadros de 4 sesiones de juego grabadas con `--guardar-crudo`, etiquetados en Roboflow ([`rodolfo-di-chiazza/tp2-vision-por-computadora-ii` v2](https://universe.roboflow.com/rodolfo-di-chiazza/tp2-vision-por-computadora-ii/dataset/2), CC BY 4.0) | 130 cuadros 508×720, 1.688 esquinas: 79 / 21 / 30 |
 
-**Datasets sintéticos:** los dos datasets de entrenamiento se armaron a partir del dataset sintético
+**Datasets sintéticos:** armamos los dos datasets de entrenamiento a partir del dataset sintético
 [Playing Cards (Augmented Startups)](https://universe.roboflow.com/augmented-startups/playing-cards-ow27d), que tiene
 cartas generadas y pegadas sobre fondos, con las etiquetas reducidas a 13 valores o a una sola clase. Todos los
 datasets etiquetan **el índice de la esquina**, no la carta entera.
@@ -201,8 +201,8 @@ datasets etiquetan **el índice de la esquina**, no la carta entera.
 **Datasets reales:**
 - **teogopk:** son fotos reales de cartas de corazones. Tiene tres limitaciones: un solo palo, un mazo con índice en
   las cuatro esquinas, y pocas K. Ver [Dataset Real/teogopk/FUENTE.txt](Dataset%20Real/teogopk/FUENTE.txt).
-- **Fotos propias:** [Dataset Real/README.md](Dataset%20Real/README.md) explica cómo sacar y etiquetar fotos propias.
-  Incluye `prelabel.py`, que pre-etiqueta las fotos con YOLO-13 para corregirlas en Roboflow.
+- **Propio:** en [Dataset Real/README.md](Dataset%20Real/README.md) contamos cómo lo armamos: grabación de 4
+  sesiones, extracción de cuadros, pre-etiquetado con YOLO-13 (`prelabel.py`) y corrección a mano en Roboflow.
 
 **Todos los datasets están incluidos en el repositorio**, con imágenes y etiquetas en formato YOLO, así que no hace
 falta descargar nada para reentrenar o evaluar:
@@ -215,7 +215,7 @@ falta descargar nada para reentrenar o evaluar:
 | teogopk | `Dataset Real/teogopk/` |
 | propio | `Dataset Real/roboflow/` |
 
-Los enlaces de Roboflow quedan como referencia de dónde se armaron los datasets. El del dataset de YOLO-1 es un
+Dejamos los enlaces de Roboflow como referencia de dónde armamos los datasets. El del dataset de YOLO-1 es un
 proyecto privado, por eso no lleva enlace, pero su contenido completo está en `YOLO - 1/Dataset YOLO - 1/`.
 
 ---
@@ -228,7 +228,7 @@ proyecto privado, por eso no lleva enlace, pero su contenido completo está en `
 | YOLO-1 | `YOLO - 1/train_yolo_1.py` | Igual que YOLO-13, con una sola clase | 5,0 h (Apple MPS) |
 | CNN-13 | `CNN - 13/train_cnn_13.py` | ResNet-18 preentrenada en ImageNet, se ajusta toda la red, 96×96, AdamW + OneCycle (lr 1e-3), *label smoothing* 0,05, corte anticipado | 30 min (CPU, 7 épocas) |
 
-En la CNN se aplican rotaciones de ±15°, traslación, escala, cambios de color y desenfoque. **No se usan espejados**,
+En la CNN aplicamos rotaciones de ±15°, traslación, escala, cambios de color y desenfoque. **No usamos espejados**,
 porque un índice espejado no es una carta válida.
 
 Los tres scripts se pueden correr desde cualquier carpeta y eligen solos el dispositivo (GPU NVIDIA, Apple MPS o
@@ -241,7 +241,7 @@ evaluar en test sin reentrenar.
 
 ## Cómo se arman las cartas (identificador)
 
-1. **Detección:** el pipeline elegido devuelve las esquinas, cada una con su valor y su confianza. Se usa
+1. **Detección:** el pipeline elegido devuelve las esquinas, cada una con su valor y su confianza. Usamos
    *NMS agnóstico a la clase*: si dos cajas casi coinciden, queda solo la más confiable aunque tengan valores
    distintos. Por defecto, YOLO solo suprime cajas del mismo valor. En una partida real, la esquina invertida y medio
    tapada de un 3♥ salía dos veces, como "3" y como "5", y la "5" contaba como una carta de más. En el test propio
@@ -253,9 +253,9 @@ evaluar en test sin reentrenar.
      confiable. Así se corrige la esquina invertida y desenfocada que se lee mal. Los pares del mismo valor siempre
      tienen prioridad.
    - La distancia entre sus centros, **relativa al largo de la esquina** (el lado mayor de su caja), está entre 3,3 y
-     4,8. Al ser relativa, no depende de la resolución ni de la altura de la cámara. Se usa el lado mayor y no la raíz
+     4,8. Al ser relativa, no depende de la resolución ni de la altura de la cámara. Usamos el lado mayor y no la raíz
      del área porque, con la carta girada, la caja del índice se ensancha. En una partida real, un 5 girado ~20°
-     quedaba fuera de la ventana anterior y se contaba dos veces. La ventana se calibró con las 1.688 esquinas
+     quedaba fuera de la ventana anterior y se contaba dos veces. Calibramos la ventana con las 1.688 esquinas
      etiquetadas del dataset propio: los pares reales se concentran en 3,5–4,5, y las fotos de prueba, con otro mazo y
      otra cámara, dan ~3,9–4,0.
    - El ángulo de la diagonal es cercano a **50°** si la carta está vertical, o a **140°** si está rotada 90°. La
@@ -278,8 +278,8 @@ arma bien las cartas detectadas en los 16 casos. Las fallas que quedan vienen de
 
 ### En video: seguimiento (`seguimiento.py`)
 
-Cada cuadro detectado por separado "parpadea": una esquina se pierde por desenfoque o se lee mal un instante. Se
-estabiliza en tres niveles:
+Cada cuadro detectado por separado "parpadea": una esquina se pierde por desenfoque o se lee mal un instante. La
+estabilizamos en tres niveles:
 
 1. **Votación por track:** ByteTrack (incluido en ultralytics, con filtro de Kalman e IoU) le da a cada esquina un id
    estable. Su valor es el más votado, ponderado por confianza, en sus últimos 15 cuadros.
@@ -336,8 +336,8 @@ turno y saldo: `python -m pytest tests`.
 
 1. **Detección de la mano:** [MediaPipe HandLandmarker](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker)
    está preentrenado, corre en CPU en tiempo real y da 21 puntos por mano. Es estimación de pose de la mano.
-2. **Clasificación de la pose:** se hace con reglas sobre esos puntos. Un dedo está extendido si
-   `dist(muñeca, punta) / dist(muñeca, nudillo) > 1,45`, y doblado si es `< 1,25`. Los umbrales se calibraron con
+2. **Clasificación de la pose:** la hacemos con reglas propias sobre esos puntos. Un dedo está extendido si
+   `dist(muñeca, punta) / dist(muñeca, nudillo) > 1,45`, y doblado si es `< 1,25`. Calibramos los umbrales con
    HaGRID. Son cocientes de distancias, así que **no dependen de la rotación ni del tamaño de la mano**, algo clave con
    cámara cenital.
 3. **Lógica temporal:** pide un tiempo mínimo para cada gesto y deja una espera de 20 cuadros entre gestos.
@@ -350,8 +350,8 @@ propias funcionan igual en cualquier orientación (experimento 6).
 falsos "PALMA" eran la **otra mano** de la persona, relajada y abierta, y en la mesa eso sería un jugador que apoya la
 mano y se planta sin querer.
 
-En la primera prueba con cámara real, el jugador intentó plantarse **mostrando la palma quieta** sobre sus cartas.
-Al analizar el video se vio que la pose PALMA se reconocía en 324 cuadros, pero la mano se movía menos de 0,2 palmas
+En nuestra primera prueba con cámara real intentamos plantarnos **mostrando la palma quieta** sobre las cartas.
+Al analizar el video vimos que la pose PALMA se reconocía en 324 cuadros, pero la mano se movía menos de 0,2 palmas
 y el gesto nunca se disparaba. Por eso ahora valen las dos formas:
 - **Palma sostenida:** hay que mantenerla 1,2 s, más que una mano apoyada de paso.
 - **Barrido:** sigue disponible y es más rápido.
@@ -385,13 +385,13 @@ Resultados con las 98 fotos reales de teogopk, imágenes originales. Ninguna se 
 
 | Split | Imágenes | Esquinas | A (YOLO-13): mAP50 / F1 | B (YOLO-1 + CNN-13): mAP50 / F1 |
 |---|---|---|---|---|
-| train | 69 | 238 | 0,77 / 0,73 | 0,82 / 0,81 |
-| valid | 18 | 49 | 0,79 / 0,79 | 0,78 / 0,75 |
-| test | 11 | 37 | 0,69 / 0,71 | 0,68 / 0,72 |
+| train | 69 | 238 | 0,74 / 0,72 | 0,82 / 0,81 |
+| valid | 18 | 49 | 0,77 / 0,80 | 0,78 / 0,75 |
+| test | 11 | 37 | 0,68 / 0,72 | 0,68 / 0,72 |
 
 **Con datos sintéticos los modelos dan 0,99–1,00; con fotos reales caen a 0,7–0,8.** Esta brecha entre lo sintético
-y lo real es el resultado central del trabajo, y lo que la motiva es lo siguiente: los datasets públicos de cartas
-son casi todos sintéticos, y el 100% en el test sintético no anticipa el rendimiento real.
+y lo real es uno de los resultados centrales del trabajo: los datasets públicos de cartas son casi todos
+sintéticos, y el 100% en el test sintético no anticipa el rendimiento real.
 
 La CNN-13 también cae: clasifica bien el 83,7% de los recortes reales del valid, contra el 100% en el test sintético.
 
@@ -407,12 +407,12 @@ Resultado en el **test real** (11 fotos que no se usaron ni para entrenar ni par
 
 | Configuración | mAP50 | F1 | R_loc | Latencia (CPU) |
 |---|---|---|---|---|
-| A: YOLO-13 | 0,69 | 0,62 | 0,60 | 98 ms |
-| **A_ft: YOLO-13 con fine-tuning** | **0,89** | **0,85** | 0,83 | 95 ms |
+| A: YOLO-13 | 0,68 | 0,62 | 0,59 | 98 ms |
+| **A_ft: YOLO-13 con fine-tuning** | **0,86** | **0,85** | 0,83 | 95 ms |
 | B: YOLO-1 + CNN-13 | 0,57 | 0,62 | 0,62 | 109 ms |
 | B_ft: ambos con fine-tuning | 0,70 | 0,71 | **0,89** | 119 ms |
 
-- **A mejora mucho:** el mAP50 pasa de 0,69 a 0,89, y en la imagen original de 0,69 a 0,90.
+- **A mejora mucho:** el mAP50 pasa de 0,68 a 0,86, y en la imagen original de 0,68 a 0,89.
 - **En B, el detector mejora pero el clasificador no alcanza:** YOLO-1 con fine-tuning es el que mejor ubica las
   esquinas (R_loc 0,89), pero la CNN sigue limitando el resultado. En el valid real pasa de 83,7% a 89,8% de
   exactitud, lejos de lo que logra YOLO-13.
@@ -432,10 +432,10 @@ especializa en ese mazo. Esto motivó el experimento siguiente.
 
 ### 3b. Fine-tuning con fotos propias (el escenario de la demo)
 
-Se grabaron 4 sesiones de juego con la cámara de la demo (un celular en vertical, como webcam), usando
-`--guardar-crudo`. De ahí se extrajeron 130 cuadros con `Dataset Real/extraer_cuadros.py`: uno cada 1,5 s, sin
-repetidos ni movidos y sin las franjas negras. Los cuadros se pre-etiquetaron con YOLO-13 y se corrigieron a mano en
-Roboflow.
+Grabamos 4 sesiones de juego con la cámara de la demo (un celular en vertical, como webcam), usando
+`--guardar-crudo`. De ahí extrajimos 130 cuadros con `Dataset Real/extraer_cuadros.py`: uno cada 1,5 s, sin
+repetidos ni movidos y sin las franjas negras. Pre-etiquetamos los cuadros con YOLO-13 y los corregimos a mano en
+Roboflow (detalle en [Dataset Real/README.md](Dataset%20Real/README.md)).
 
 El dataset propio quedó con **1.688 esquinas**:
 - **train:** 79 cuadros, de 2 sesiones.
@@ -449,38 +449,39 @@ Resultados en el **test propio** (30 cuadros de una sesión que no se usó para 
 
 | Configuración | mAP50 | Precisión | Recall | F1 | Latencia (CPU) |
 |---|---|---|---|---|---|
-| A: YOLO-13 base | 0,86 | 0,95 | 0,66 | 0,78 | 117 ms |
-| A_ft: ajustado con teogopk | 0,91 | 0,93 | 0,67 | 0,78 | 108 ms |
-| **A_propio: ajustado con fotos propias** | **0,99** | **0,96** | **0,96** | **0,96** | 111 ms |
-| B: YOLO-1 + CNN-13 base | 0,82 | 0,99 | 0,64 | 0,78 | 144 ms |
-| B_ft: ajustado con teogopk | 0,90 | 0,95 | 0,73 | 0,83 | 148 ms |
-| B_propio: ajustado con fotos propias | 0,94 | 0,92 | 0,93 | 0,93 | 155 ms |
+| A: YOLO-13 base | 0,86 | 0,96 | 0,66 | 0,78 | 114 ms |
+| A_ft: ajustado con teogopk | 0,86 | 0,94 | 0,66 | 0,78 | 106 ms |
+| **A_propio: ajustado con fotos propias** | **0,98** | **0,96** | **0,96** | **0,96** | 100 ms |
+| B: YOLO-1 + CNN-13 base | 0,82 | 0,99 | 0,64 | 0,78 | 136 ms |
+| B_ft: ajustado con teogopk | 0,90 | 0,95 | 0,73 | 0,83 | 134 ms |
+| B_propio: ajustado con fotos propias | 0,94 | 0,92 | 0,93 | 0,93 | 143 ms |
 
-Promedio de las 4 variantes: A_propio 0,95 de mAP50 y 0,91 de F1, contra 0,86 y 0,78 del base. B_propio queda en 0,91
+Promedio de las 4 variantes: A_propio 0,93 de mAP50 y 0,91 de F1, contra 0,85 y 0,78 del base. B_propio queda en 0,91
 y 0,88.
 
 - **Con fotos del escenario real, el recall pasa de 0,66 a 0,96.** El modelo base casi no se equivoca
-  (precisión 0,95), pero en mesas con muchas cartas amontonadas pierde un tercio de las esquinas. Con fotos propias
-  las encuentra casi todas, sin perder precisión. El ajuste con teogopk, otro mazo, casi no cambia el recall
-  (0,66 → 0,67).
-- **A sigue siendo mejor que B** también después de ajustar los dos con los mismos datos, y es ~40 ms más rápido.
+  (precisión 0,96), pero en mesas con muchas cartas amontonadas pierde un tercio de las esquinas. Con fotos propias
+  las encuentra casi todas, sin perder precisión. El ajuste con teogopk, otro mazo, no cambia el recall
+  (0,66).
+- **A sigue siendo mejor que B** también después de ajustar los dos con los mismos datos, y es entre 20 y 40 ms
+  más rápido.
   La CNN-13 ya clasificaba bien este mazo (97,9% de exactitud en el valid propio antes de ajustar, 98,7% después).
   La mejora de B viene sobre todo del detector.
-- **Especialización en la orientación:** todas las fotos propias se grabaron con el celular en vertical. Con la
-  imagen rotada 90°, A_propio baja a 0,82 de F1, un poco por debajo del base (0,84). Para jugar con la cámara en
-  horizontal habría que sumar una sesión grabada así.
+- **Especialización en la orientación:** grabamos todas las fotos propias con el celular en vertical. Con la
+  imagen rotada 90°, A_propio baja a 0,83 de F1, un poco por debajo del base (0,84). Para jugar con la cámara en
+  horizontal tendríamos que sumar una sesión grabada así.
 - **Fuera del escenario no empeora:** con las 4 fotos de prueba del mazo Bicycle Dragon, A_propio empata con el base
   (15/16 manos correctas, con confianza 0,5).
-- **Manos (`cartas_ok`):** pasan de 7% a 30% en la imagen original. Siguen bajas porque en estos cuadros hay 8 a 12
+- **Manos (`cartas_ok`):** pasan de 7% a 40% en la imagen original. Siguen bajas porque en estos cuadros hay 8 a 12
   cartas por mesa y basta una esquina mal para fallar la mano. En una mano real de Blackjack (2 a 5 cartas por lado),
-  el sistema anda bien, como se vio al jugar.
+  el sistema anda bien, como vimos al jugar.
 
 **Decisión:** la aplicación usa por defecto los pesos ajustados con fotos propias si existen (`--pesos auto`), y si
 no, los base. También se pueden elegir con `--pesos base|real|propio`.
 
 ### 4. Robustez (fotos propias del mazo Bicycle Dragon)
 
-Se evaluaron las 4 fotos de prueba en sus 4 variantes (original, rotada 90°, rotada 180° y al 50%), contando una
+Evaluamos las 4 fotos de prueba en sus 4 variantes (original, rotada 90°, rotada 180° y al 50%), contando una
 imagen como correcta si las cartas de la Casa y del Jugador son exactamente las reales:
 
 | Pipeline | Manos correctas | Latencia (CPU) |
@@ -571,9 +572,9 @@ Los videos quedan en `videos/partida_simulada*.mp4`.
 
 ### 9. Partidas reales (prueba de regresión)
 
-`Experimentos/partidas_reales/` guarda partidas jugadas de verdad con la cámara de la demo, grabadas con
-`--guardar-crudo`. En `registro.yaml` está el resultado esperado de cada una, verificado contra el panel que se vio
-en vivo: ganador, cartas finales, puntajes, gestos e irregularidades. `verificar_partidas.py` reproduce cada video
+`Experimentos/partidas_reales/` guarda partidas que jugamos de verdad con la cámara de la demo, grabadas con
+`--guardar-crudo`. En `registro.yaml` está el resultado esperado de cada una, que verificamos contra el panel en
+vivo: ganador, cartas finales, puntajes, gestos e irregularidades. `verificar_partidas.py` reproduce cada video
 por la cadena completa (detector, seguimiento, reglas y gestos) y comprueba que dé exactamente lo mismo.
 
 | Partida | Mano | Resultado |
@@ -584,7 +585,7 @@ por la cadena completa (detector, seguimiento, reglas y gestos) y comprueba que 
 | crudo_12 | A+5 contra K; pide un 5 girado y llega a 21 (se planta solo); la Casa llega a 20 | Gana el Jugador 21 a 20 |
 
 **4/4 partidas reales dan el resultado esperado, sin irregularidades.** Cada una tarda ~40 s en reproducirse en CPU.
-Para confirmar que la prueba detecta errores de verdad, se rompió a propósito la regla del As (que valga siempre 1):
+Para confirmar que la prueba detecta errores de verdad, rompimos a propósito la regla del As (que valga siempre 1):
 `crudo_12` falla y muestra qué cambió (21 → 11, no se planta solo, sin ganador).
 
 ```bash
@@ -603,7 +604,7 @@ diseño viene de la notebook de Cristhian Pettico.
 - **Métricas:** F1 y mAP50, con una esquina contada como acierto si coincide con la real (IoU ≥ 0,5) y tiene el valor
   correcto, más R_loc (si encontró la esquina, sin importar el valor).
 
-Se evaluaron 4 configuraciones (A y B, base y ajustadas con fotos propias) en dos dominios:
+Evaluamos 4 configuraciones (A y B, base y ajustadas con fotos propias) en dos dominios:
 - **Test propio:** 30 cuadros reales, 412 esquinas.
 - **Test sintético:** una muestra fija de 100 imágenes, 400 esquinas.
 
@@ -656,7 +657,7 @@ perturbación: `robustez_*_ejemplos.jpg`.
 
    Que 90° y 180° den bien coincide con que el emparejamiento de esquinas maneja cartas verticales y horizontales.
 4. **Fondo: casi no afecta.** Reemplazar el fondo de una foto con una máscara de color no es confiable: separar
-   "papel blanco" del fondo falla con mesas claras y figuras de color. Por eso se compusieron escenas: **7 cartas
+   "papel blanco" del fondo falla con mesas claras y figuras de color. Por eso compusimos escenas: **7 cartas
    reales del mazo de la demo**, recortadas con su contorno exacto del último cuadro de las partidas reales, pegadas
    sobre 8 fondos. Son 30 escenas por fondo, con **las mismas cartas, posiciones y rotaciones en todos los fondos**
    (244 esquinas por fondo), así que solo cambia el fondo:
@@ -672,7 +673,7 @@ perturbación: `robustez_*_ejemplos.jpg`.
    encuentra solo el 83% de las esquinas. Con cartas separadas, A da ~1,00 sobre cualquier fondo, mientras que en las
    fotos reales el base daba 0,78. **La dificultad real son las cartas amontonadas y tapadas, no el fondo.**
 
-   *Limitaciones:* son 7 cartas de 6 valores, y las cajas reales de sus esquinas se tomaron de las detecciones de
+   *Limitaciones:* son 7 cartas de 6 valores, y tomamos las cajas reales de sus esquinas de las detecciones de
    A_propio en el cuadro original, verificadas a ojo. Eso puede favorecer levemente a A_propio.
 
 ### 11. Confusiones entre valores
@@ -734,12 +735,13 @@ python -m pytest tests
 - **Cartas tapadas:** si las dos esquinas de una carta quedan tapadas, la carta no se cuenta. Si una carta tiene las
   dos esquinas visibles pero no se emparejan, se cuenta dos veces.
 - **Reparto Casa / Jugador:** se hace por la mitad de la imagen. Una mesa real necesitaría zonas configurables.
-- **Videos de prueba simulados:** se generaron a partir de fotos, con movimiento de cámara simulado. Falta medir con
-  video real del mazo de la demo, con cartas que entran, salen y se superponen.
+- **Seguimiento medido en video simulado:** el experimento 5 usa videos generados a partir de fotos, con movimiento
+  de cámara simulado. Con video real lo validamos solo a nivel de partida completa (experimento 9).
 - **Contar cartas jugadas:** el seguimiento estabiliza la mano actual, pero todavía no cuenta las cartas que ya salieron
   del mazo, que sería útil para la estrategia.
-- **Gestos sin probar en cámara real:** se evaluaron con fotos y clips de HaGRID. Falta medirlos con cámara real y un
-  jugador, sobre todo PEDIR. Doblar, dividir y apostar no están implementados.
+- **Gestos:** medimos su exactitud con fotos y clips de HaGRID, y en cámara real los usamos en las 4 partidas
+  grabadas, con un solo jugador. Falta una medición sistemática con cámara real, sobre todo de PEDIR. Doblar,
+  dividir y apostar no están implementados.
 - **Un solo Jugador:** el reparto entre Casa y Jugador es por mitades de la imagen. Varios jugadores necesitarían una
   zona por jugador.
 

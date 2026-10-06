@@ -1,101 +1,103 @@
-# Dataset Real: fotos del mazo físico
+# Dataset Real: fotos reales de cartas
 
-## Para qué sirve
-Los modelos se entrenaron con imágenes sintéticas. Con fotos reales del mazo Bicycle Dragon, el pipeline A acierta
-15 de 16 manos, pero el pipeline B solo 10 de 16. La CNN-13 confunde el índice del A♦ con un "4", aunque en el test
-sintético tenga 100% de exactitud. Este dataset sirve para dos cosas:
+Entrenamos los tres modelos con imágenes sintéticas, y en ese dominio el problema queda prácticamente resuelto
+(mAP50 0,995 y 100% de exactitud de la CNN-13). Para saber cómo funciona el sistema con cartas de verdad necesitábamos
+fotos reales, y las usamos para dos cosas:
 
-1. **Test real** para el paper: medir A y B en el dominio donde se usa el sistema.
-2. **Fine-tuning** con fotos reales para achicar la brecha entre lo sintético y lo real.
+1. **Test real:** medir los pipelines A y B en el dominio donde se usa el sistema.
+2. **Fine-tuning:** ajustar los modelos con fotos reales para achicar la brecha entre lo sintético y lo real.
 
-## Qué fotos sacar (unas 100 en total)
-Sacarlas desde arriba, como se vería la mesa en la demo, con la carta entera dentro del cuadro.
+En esta carpeta hay dos datasets reales:
 
-- **Cubrir los 13 valores de forma pareja**, de distintos palos. Que aparezca cada valor unas 15 veces o más en total.
-- **De 2 a 6 cartas por foto**, algunas con dos cartas del mismo valor juntas.
-- **Variar lo siguiente:**
-  - Fondos: madera, mantel, mesa clara y oscura, paño verde.
-  - Luz: natural, lámpara, con algo de sombra.
-  - Distancia de la cámara: de 30 a 60 cm.
-  - Rotación: cartas derechas, giradas de 10 a 45° y a 90°.
-- **Incluir casos difíciles:**
-  - Cartas con una esquina tapada.
-  - Cartas superpuestas.
-  - Cartas boca abajo (el dorso no se etiqueta, sirve como ejemplo negativo).
-  - Algo de desenfoque.
-
-## Cómo separar las fotos (importante)
-Separar **por sesión**, no al azar. Si dos fotos casi iguales quedan una en train y otra en test, la métrica de test
-sale inflada. Una sesión es un mismo día, fondo y luz.
-
-| Carpeta | Contenido | Cantidad aprox. |
+| Carpeta | Origen | Tamaño |
 |---|---|---|
-| `fotos/train/` | 2 o 3 sesiones | 60 |
-| `fotos/valid/` | 1 sesión | 20 |
-| `fotos/test/` | 1 sesión **con un fondo que no aparezca en train** | 20 |
+| `teogopk/` | Público: [TeogopK/Playing-Cards-Object-Detection](https://github.com/TeogopK/Playing-Cards-Object-Detection), `data/real_dataset` (CC0). Ver `teogopk/FUENTE.txt` | 98 fotos 416×416: 69 / 18 / 11 |
+| `roboflow/` | Propio: cuadros de nuestras partidas, etiquetados en Roboflow ([`rodolfo-di-chiazza/tp2-vision-por-computadora-ii` v2](https://universe.roboflow.com/rodolfo-di-chiazza/tp2-vision-por-computadora-ii/dataset/2), CC BY 4.0) | 130 cuadros 508×720, 1.688 esquinas: 79 / 21 / 30 |
 
-Si las fotos están en formato .heic (iPhone), exportarlas como .jpg.
+Empezamos con teogopk, pero tiene tres limitaciones: un solo palo (corazones), un mazo con índices en las cuatro
+esquinas y pocas K. Además, el fine-tuning con esas fotos no mejoró el rendimiento con nuestro mazo. Por eso armamos
+un dataset propio en el escenario de la demo: nuestra mesa, nuestro mazo y la misma cámara con la que jugamos.
 
-## Opción recomendada: sacar las fotos de video
-En lugar de sacar las fotos una por una, se puede **grabar mientras se juega o se reparte**, con el mismo escenario
-de la demo (cámara, mesa y luz), y extraer cuadros de ahí.
+## Cómo armamos el dataset propio
 
-1. Grabar la imagen **cruda**, sin cajas ni textos dibujados, que contaminarían el entrenamiento. Usar una sesión por
-   video, por ejemplo una para train, otra para valid y otra para test, cambiando algo entre sesiones (luz, hora,
-   mantel):
-   ```
-   python Identificador_Cartas/identificador_cartas.py --camara 1 --conf 0.3 --juego --gestos --guardar-crudo videos/crudo_sesion1.mp4
-   ```
-   Los videos anotados (`--guardar`) **no sirven** para esto.
-2. Extraer cuadros. El script toma uno cada 1,5 s y descarta los repetidos y los movidos. **Todos los cuadros de un
-   mismo video van al mismo split:**
-   ```
-   python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion1.mp4 videos/crudo_sesion2.mp4 --split train
-   python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion3.mp4 --split valid
-   python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion4.mp4 --split test
-   ```
-3. Seguir con el pre-etiquetado, igual que con fotos sueltas.
+### 1. Grabación
 
-Unos 10 minutos de juego dan del orden de 150–250 cuadros útiles. Conviene ir cambiando las cartas para cubrir los
-13 valores.
+En lugar de sacar fotos sueltas, grabamos **4 sesiones de juego** con la cámara de la demo: un celular cenital usado
+como webcam, en vertical. Usamos `--guardar-crudo`, que graba la imagen limpia de la cámara, sin las cajas ni los
+textos que dibuja la aplicación (esos dibujos contaminarían el entrenamiento):
 
-## Pre-etiquetado y corrección
-1. Correr el pre-etiquetado desde la carpeta del repo:
-   ```
-   python "Dataset Real/prelabel.py"
-   ```
-   El script detecta las esquinas con YOLO-13 y genera `para_roboflow/{train,valid,test}/` con las imágenes y sus etiquetas.
-2. En Roboflow, crear un proyecto nuevo de **Object Detection**.
-3. Subir cada carpeta de `para_roboflow/` eligiendo su split. Es la opción "Upload to: Train / Valid / Test", y hay que
-   usarla para **no dejar que Roboflow las reparta al azar**.
-4. **Revisar todas las cajas**:
-   - Agregar las esquinas que faltan.
-   - Borrar las detecciones falsas.
-   - Corregir los valores mal asignados.
-   - Usar el mismo criterio que el dataset original: la caja encierra el índice de la esquina (valor y palo), y se
-     etiquetan las dos esquinas de cada carta si se ven.
+```
+python Identificador_Cartas/identificador_cartas.py --camara 1 --conf 0.3 --juego --gestos --guardar-crudo videos/crudo_sesion1.mp4
+```
 
-   Sin esta revisión, el test real queda sesgado a favor del pipeline A, porque las etiquetas las propuso YOLO-13.
-5. Generar una versión **sin aumentos de datos y sin redimensionar**, y exportarla en formato **YOLOv11**.
-6. Descomprimirla en `Dataset Real/roboflow/`, que tiene que quedar con `data.yaml`, `train/`, `valid/` y `test/`.
+Entre una sesión y otra fuimos cambiando las cartas para cubrir los 13 valores. Las mesas tienen muchas cartas
+superpuestas y medio tapadas, que es justamente lo difícil.
 
-## Lo que sigue (después de tener el dataset)
-El export de Roboflow tiene que quedar en `Dataset Real/roboflow/`, que es el dataset `propio`. Correr desde la
-carpeta del repo:
+### 2. Extracción de cuadros y separación por sesión
 
-1. **Evaluar los modelos base en el test propio** (línea de base para el paper):
-   ```
-   python Experimentos/evaluar_real.py --dataset propio
-   ```
-2. **Fine-tuning** con train propio y sintético mezclados. Solo usa train y valid; el test no se toca. Los pesos
-   quedan en las carpetas `*-finetune-propio`, sin pisar los ajustados con teogopk (`*-finetune-real`):
-   ```
-   python Experimentos/finetune_real.py --dataset propio --modelo todos      # en la Mac: --device mps
-   ```
-3. **Volver a evaluar.** Ahora aparecen también `A_propio` y `B_propio`, comparados sobre el mismo test:
-   ```
-   python Experimentos/evaluar_real.py --dataset propio
-   ```
-4. **Jugar con los pesos ajustados:** `python Identificador_Cartas/identificador_cartas.py ... --pesos propio`.
+Con `extraer_cuadros.py` tomamos un cuadro cada 1,5 s. El script descarta los cuadros casi iguales al anterior
+(compara por bloques, porque agregar una carta cambia solo una parte de la imagen) y los movidos o desenfocados, y
+recorta las franjas negras que agrega el celular al grabar en vertical.
 
-Los resultados quedan en `Experimentos/resultados/` (CSV por configuración y variante, AP por valor y detalle por imagen).
+Separamos los splits **por sesión, no al azar**: si dos cuadros casi iguales quedan uno en train y otro en test, la
+métrica de test sale inflada. Todos los cuadros de un mismo video van al mismo split:
+
+| Split | Sesiones | Cuadros |
+|---|---|---|
+| train | sesiones 1 y 2 | 38 + 41 = 79 |
+| valid | sesión 3 | 21 |
+| test | sesión 4 | 30 (412 esquinas) |
+
+```
+python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion1.mp4 videos/crudo_sesion2.mp4 --split train
+python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion3.mp4 --split valid
+python "Dataset Real/extraer_cuadros.py" videos/crudo_sesion4.mp4 --split test
+```
+
+Los cuadros quedan en `fotos/{train,valid,test}/`. Esa carpeta no va al repositorio, porque las imágenes finales
+están en `roboflow/`.
+
+### 3. Pre-etiquetado
+
+Etiquetar 1.688 esquinas a mano desde cero lleva mucho tiempo. Por eso `prelabel.py` detecta las esquinas con
+YOLO-13 y genera `para_roboflow/{train,valid,test}/` con las imágenes y las etiquetas propuestas, en formato YOLO:
+
+```
+python "Dataset Real/prelabel.py"
+```
+
+### 4. Corrección en Roboflow
+
+Subimos cada carpeta de `para_roboflow/` a un proyecto de Object Detection en Roboflow, eligiendo el split a mano
+("Upload to: Train / Valid / Test") para que Roboflow no los repartiera al azar. Después **revisamos todas las cajas**:
+agregamos las esquinas que faltaban, borramos las detecciones falsas y corregimos los valores mal asignados. Usamos
+el mismo criterio que los datasets sintéticos: la caja encierra el índice de la esquina (valor y palo), y se
+etiquetan las dos esquinas de cada carta si se ven.
+
+Esta revisión es importante: sin ella, el test real quedaría sesgado a favor del pipeline A, porque las etiquetas
+las propuso YOLO-13.
+
+Finalmente generamos una versión **sin aumentos de datos y sin redimensionar**, la exportamos en formato YOLOv11 y la
+descomprimimos en `roboflow/` (con `data.yaml`, `train/`, `valid/` y `test/`).
+
+## Cómo lo usamos
+
+Desde la raíz del repositorio:
+
+```
+python Experimentos/evaluar_real.py --dataset propio                      # evalúa todas las configuraciones en el test propio
+python Experimentos/finetune_real.py --dataset propio --modelo todos      # fine-tuning (en la Mac: --device mps)
+```
+
+El fine-tuning usa solo train y valid; el test no se toca hasta la evaluación. Los pesos quedan en las carpetas
+`*-finetune-propio`, separados de los ajustados con teogopk (`*-finetune-real`). Los resultados quedan en
+`Experimentos/resultados/` y están resumidos en el [README principal](../README.md) (experimentos 3 y 3b).
+
+Con 79 cuadros propios, el recall del pipeline A en el test propio pasó de 0,66 a 0,96. Por eso la aplicación usa
+estos pesos por defecto (`--pesos auto`).
+
+## Cómo ampliarlo
+
+Para sumar sesiones (por ejemplo con otra mesa, otra luz o la cámara en horizontal) repetimos los mismos pasos:
+grabar con `--guardar-crudo`, extraer cuadros con todos los de una sesión en un mismo split, pre-etiquetar, corregir
+en Roboflow, exportar una versión nueva en `roboflow/` y volver a correr el fine-tuning y la evaluación.
