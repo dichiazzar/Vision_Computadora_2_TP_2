@@ -14,7 +14,8 @@ yolo11*.pt
 # ---------------------------------------------------------------- videos (se generan con los scripts o con --guardar)
 *.mp4
 videos/
-!Experimentos/partidas_reales/*.mp4     # partidas reales de la prueba de regresión
+# excepción: las partidas reales de la prueba de regresión sí van al repo
+!Experimentos/partidas_reales/*.mp4
 
 # ---------------------------------------------------------------- datos que se bajan o regeneran solos (ver README)
 Gestos/modelos/
