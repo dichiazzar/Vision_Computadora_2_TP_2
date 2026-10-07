@@ -176,7 +176,7 @@ de entrenamiento (ver [Dataset Real/README.md](Dataset%20Real/README.md)). Con `
 WhatsApp, PowerPoint y los navegadores (usa el ffmpeg de `imageio-ffmpeg`). Para convertir un video grabado antes:
 `python Identificador_Cartas/video.py partida.mp4`. Para elegir la cámara, el número se ve con
 `python -c "import cv2; [print(i, cv2.VideoCapture(i).read()[0]) for i in range(4)]"`; con el celular como webcam
-(Vínculo a Windows, DroidCam o Camo) suele ser la 1. `--resolucion` fija la resolución (por defecto 1280x720).
+(Vínculo a Windows, DroidCam o Camo) suele ser la 1; cómo conectarlo está en [COMO_JUGAR.md](COMO_JUGAR.md), sección 1.1. `--resolucion` fija la resolución (por defecto 1280x720).
 
 Los gestos solo se reconocen en la mitad del Jugador, solo en su turno, y no mientras espera la carta que pidió. Así
 la mano del crupier repartiendo no dispara nada.
