@@ -620,7 +620,7 @@ Evaluamos 4 configuraciones (A y B, base y ajustadas con fotos propias) en dos d
 | Familia | A | B | **A_propio** | B_propio |
 |---|---|---|---|---|
 | *Test propio, sin perturbar* | *(0,78)* | *(0,78)* | ***(0,96)*** | *(0,93)* |
-| Rotación (IoU ≥ 0,5) | 0,76 | 0,72 | **0,81** | 0,81 |
+| Rotación (IoU ≥ 0,5) | 0,76 | 0,72 | **0,81** | 0,80 |
 | Oclusión | 0,28 | 0,22 | **0,52** | 0,46 |
 | Iluminación | 0,69 | 0,58 | **0,88** | 0,82 |
 | *Test sintético, sin perturbar* | *(1,00)* | *(1,00)* | *(1,00)* | *(1,00)* |

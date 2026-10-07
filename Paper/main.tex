@@ -31,8 +31,8 @@ Presentamos un prototipo que permite jugar al Blackjack sobre una mesa real: una
 que se reparten y el jugador pide carta o se planta con gestos de la mano. Comparamos dos estrategias para reconocer el
 índice de la esquina de cada carta: un detector YOLO11 de 13 clases (A) y un detector de una clase seguido de una
 ResNet-18 (B). Ambas alcanzan mAP50 $\approx$ 0,99 en el dataset sintético de entrenamiento, pero sobre fotos reales
-caen a 0,68--0,86. El ajuste fino con fotos de otro mazo no se transfiere, mientras que con 79 cuadros del
-escenario propio el recall de A sube de 0,66 a 0,96 (F1 0,96). Evaluamos la robustez ante rotación, oclusión,
+caen a 0,68--0,86. El ajuste fino con fotos de otro mazo casi no se transfiere (F1 de 0,78 a 0,78
+en A y a 0,83 en B), mientras que con 79 cuadros del escenario propio el recall de A sube de 0,66 a 0,96 (F1 0,96). Evaluamos la robustez ante rotación, oclusión,
 iluminación y fondo: la oclusión es la perturbación más dañina, la iluminación afecta mucho más en datos reales que en
 sintéticos y el fondo casi no influye. El sistema completo (emparejamiento geométrico de esquinas, seguimiento
 ByteTrack, gestos con MediaPipe y un motor de reglas) resolvió correctamente las 4 partidas reales registradas.
@@ -121,10 +121,21 @@ Casa pide hasta llegar a 17, el As vale 11 si no se pasa de 21, y un cambio se a
 cartas que nadie pidió). Mientras hay una mano sobre la mesa no se confirma ningún cambio.
 
 \subsection{Protocolo de evaluación}
-Una detección es correcta si su IoU (Intersect over Union) con una esquina real es $\geq 0{,}5$ y el valor coincide. Se reportan mAP50
+Una detección es correcta si su IoU (Intersection over Union) con una esquina real es $\geq 0{,}5$ y el valor coincide. Se reportan mAP50
 (promedio de los 13 valores), precisión (P), recall (R) y F1 con confianza $\geq 0{,}5$, y la latencia por imagen en
-CPU (AMD Ryzen 7 7840U). Para la robustez se aplican 21 perturbaciones a varios niveles (Fig.~\ref{fig:perturbaciones}) y todas las configuraciones ven exactamente la misma imagen perturbada (semilla
-fija). Al rotar, las cajas reales se transforman junto con la imagen.
+CPU (AMD Ryzen 7 7840U).
+
+\textbf{Robustez.} Sobre el test propio (30 cuadros, 412 esquinas) y una muestra fija de 100 imágenes del test
+sintético se aplican 26 condiciones en 5 perturbaciones (Fig.~\ref{fig:perturbaciones}): rotación alrededor del
+centro (15° a 180°, 6 niveles), oclusión de cada índice con un rectángulo desde un borde al azar (10\% a 60\% del
+índice, 6 niveles), brillo (ganancia $\times$0,2 a $\times$2,5, 6 niveles), contraste (factor $\times$0,6 a
+$\times$0,15, 4 niveles) y sombra (gradiente de luz con mínimo del 60\% al 10\%, 4 niveles). Todas las configuraciones
+ven exactamente la misma imagen perturbada (semilla fija) y, al rotar, las cajas reales se transforman junto con la
+imagen. Para el \textbf{fondo}, reemplazar el fondo de una foto con una máscara de color no resultó confiable, por lo
+que se compusieron 30 escenas con 7 cartas reales recortadas del mazo de la demo (6 valores, 244 esquinas) sobre 8
+fondos, con las mismas cartas y posiciones en todos: así solo cambia el fondo.
+\textbf{Confusiones.} Cada esquina real se cruza con la detección que más se le superpone (IoU $\geq$ 0,5, sin mirar
+el valor), lo que separa tres errores: valor equivocado, esquina no detectada y falso positivo.
 
 \begin{figure*}[t]
 \centering
@@ -155,6 +166,7 @@ Modelo & mAP50 & F1 & mAP50 & F1 & mAP50 & F1 \\
 A base       & 0,995 & 1,00 & 0,68 & 0,72 & 0,86 & 0,78 \\
 B base       & 0,995$^\dagger$ & 1,00 & 0,68 & 0,72 & 0,82 & 0,78 \\
 A \emph{ft}     & --    & --   & \textbf{0,89} & \textbf{0,89} & 0,86 & 0,78 \\
+B \emph{ft}     & --    & --   & 0,77 & 0,78 & 0,90 & 0,83 \\
 A \emph{propio} & --    & --   & 0,70 & 0,71 & \textbf{0,98} & \textbf{0,96} \\
 B \emph{propio} & --    & --   & 0,75 & 0,73 & 0,94 & 0,93 \\
 \midrule
@@ -167,13 +179,17 @@ B \emph{propio} & --    & --   & 0,75 & 0,73 & 0,94 & 0,93 \\
 La Tabla~\ref{tab:dominios} muestra el resultado central. En el dominio sintético el problema está prácticamente
 resuelto (mAP50 0,995 y 100\% de exactitud de la CNN), pero el desempeño \textbf{cae a 0,68--0,86 de mAP50 en fotos
 reales}, una brecha conocida en el entrenamiento con datos sintéticos \cite{tremblay2018}. El ajuste fino la cierra,
-pero \textbf{solo en su propio dominio}: el modelo ajustado con el dataset público sube a F1 0,89 allí y queda igual
-que el base (0,78) en el escenario propio, y el ajustado con 79 cuadros propios llega a F1 0,96 en su escenario y queda
-igual que el base (0,71) en el público. Para un sistema desplegado, conviene invertir en pocas fotos del escenario real
-antes que en más datos genéricos.
+pero \textbf{sobre todo en su propio dominio}: A ajustado con el dataset público sube a F1 0,89 allí y queda igual
+que el base (0,78) en el escenario propio, y A ajustado con 79 cuadros propios llega a F1 0,96 en su escenario y queda
+igual que el base (0,71) en el público. B ajustado con el dataset público es la excepción parcial: en el escenario
+propio sube de 0,78 a 0,83, porque el ajuste mejora sobre todo a su detector de una clase, y localizar una esquina
+generaliza mejor entre mazos que clasificar su valor. Aun así queda lejos de lo que se logra con fotos propias
+(0,93--0,96). Para un sistema desplegado, conviene invertir en pocas fotos del escenario real antes que en más datos
+genéricos.
 
-En el escenario propio A supera a B (F1 0,96 frente a 0,93 ajustados) y es entre 20 y 40~ms más rápido; en el
-dataset público ambos quedan parejos (diferencias $\leq$ 0,02). La ventaja de B se limita a una precisión ligeramente
+En el escenario propio A supera a B (F1 0,96 frente a 0,93 ajustados) y es entre 20 y 40~ms más rápido. En el dataset
+público, A y B quedan parejos sin ajustar o ajustados con fotos propias (diferencias $\leq$ 0,02), y ajustados con ese
+mismo dataset A supera a B (0,89 frente a 0,78). La ventaja de B se limita a una precisión ligeramente
 mayor del modelo base (0,99 frente a 0,96). Por eso la aplicación usa A ajustado con fotos propias.
 
 \subsection{Robustez}
@@ -188,14 +204,15 @@ cortado: ajustados con fotos propias). Las rotaciones se miden con IoU $\geq$ 0,
 
 \begin{table}[t]
 \centering
-\caption{F1 medio por familia de perturbación (promedio de los niveles).}
+\caption{F1 medio por familia de perturbación (promedio de sus niveles; IoU $\geq$ 0,5). Sin perturbar, el F1 es
+0,78 / 0,78 / 0,96 / 0,93 en el test propio y 1,00 en el sintético.}
 \label{tab:robustez}
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{llcccc}
 \toprule
 Dominio & Familia & A & B & A \emph{propio} & B \emph{propio} \\
 \midrule
-\multirow{3}{*}{Real propio} & Rotación & 0,76 & 0,72 & \textbf{0,81} & \textbf{0,81} \\
+\multirow{3}{*}{Real propio} & Rotación & 0,76 & 0,72 & \textbf{0,81} & 0,80 \\
  & Oclusión    & 0,28 & 0,22 & \textbf{0,52} & 0,46 \\
  & Iluminación & 0,69 & 0,58 & \textbf{0,88} & 0,82 \\
 \midrule
@@ -206,31 +223,100 @@ Dominio & Familia & A & B & A \emph{propio} & B \emph{propio} \\
 \end{tabular}
 \end{table}
 
-La Tabla~\ref{tab:robustez} y la Fig.~\ref{fig:robustez} resumen los experimentos sobre el test propio (30 cuadros,
-412 esquinas) y una muestra del sintético (100 imágenes).
-\textbf{Oclusión.} Es la perturbación más dañina: en el sintético A tolera el 30\% del índice tapado (F1 0,95) y con
-el 50\% cae a 0,52; en datos reales, donde las mesas ya tienen cartas superpuestas, el modelo base pierde desde el
-10\% (0,62) y el ajustado resiste hasta el 20\% (0,89). Esto motivó contar como carta una esquina suelta, la memoria
-del seguimiento y congelar la mesa mientras hay una mano encima.
-\textbf{Iluminación.} En el sintético los modelos son casi inmunes (F1 $\geq$ 0,98), porque ese dataset ya incluye
-variaciones de brillo; en datos reales la subexposición y el bajo contraste son críticos: con brillo $\times$0,2 B
-obtiene F1 0 y A ajustado 0,58, y con contraste $\times$0,15 A base cae a 0,24 y el ajustado mantiene 0,67. Las
-sombras casi no afectan. El ajuste fino mejora la robustez a la iluminación en +0,19 de F1 medio.
-\textbf{Rotación.} Con IoU $\geq$ 0,5 el F1 cae a 0,46 a 45° incluso en el sintético, pero es un efecto de la medición:
-la caja real rotada es la caja alineada que contiene al índice girado, más grande que la predicción. Con IoU $\geq$
-0,3 el sintético da F1 $\geq$ 0,96 en todos los ángulos; en datos reales queda una caída genuina (de 0,96 a 0,84 a
-45°), mientras que 90° y 180° se resuelven bien.
-\textbf{Fondo.} Reemplazar el fondo de una foto con una máscara de color no resultó confiable, por lo que se
-compusieron 30 escenas con 7 cartas reales recortadas del mazo de la demo sobre 8 fondos (madera, paño verde, oscuro,
-blanco, textura, desorden de colores, ruido y mármol), con las mismas cartas y posiciones en todos. A obtiene F1
-$\geq$ 0,99 en los 8; el único fondo que afecta es el blanco para B base (0,90), cuyo detector encuentra el 83\% de
-las esquinas. Con cartas separadas, el fondo no es la dificultad: lo son la superposición y la oclusión.
+\begin{table}[t]
+\centering
+\caption{F1 en niveles seleccionados de cada perturbación: test propio (4 configuraciones) y test sintético
+(modelo A base). La serie completa está en la Fig.~\ref{fig:robustez}.}
+\label{tab:niveles}
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{llccccc}
+\toprule
+ & & \multicolumn{4}{c}{Real propio} & Sint. \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-7}
+Perturbación & Nivel & A & B & A \emph{pr.} & B \emph{pr.} & A \\
+\midrule
+Ninguna    & --             & 0,78 & 0,78 & 0,96 & 0,93 & 1,00 \\
+\midrule
+Oclusión   & 10\%           & 0,62 & 0,55 & 0,93 & 0,87 & 1,00 \\
+           & 20\%           & 0,53 & 0,45 & 0,89 & 0,79 & 1,00 \\
+           & 30\%           & 0,36 & 0,21 & 0,71 & 0,55 & 0,95 \\
+           & 50\%           & 0,02 & 0,00 & 0,14 & 0,16 & 0,52 \\
+\midrule
+Brillo     & $\times$0,2    & 0,40 & 0,00 & 0,58 & 0,00 & 1,00 \\
+           & $\times$2,5    & 0,67 & 0,60 & 0,80 & 0,79 & 0,86 \\
+Contraste  & $\times$0,15   & 0,24 & 0,02 & 0,67 & 0,70 & 0,99 \\
+Sombra     & mín. 10\%      & 0,76 & 0,64 & 0,92 & 0,85 & 1,00 \\
+\midrule
+Rotación   & 45°, IoU 0,5   & 0,67 & 0,64 & 0,72 & 0,69 & 0,46 \\
+(IoU 0,3   & 45°            & 0,81 & 0,76 & 0,84 & 0,85 & 0,98 \\
+salvo      & 90°            & 0,88 & 0,79 & 0,84 & 0,85 & 1,00 \\
+indicado)  & 180°           & 0,84 & 0,80 & 0,92 & 0,93 & 1,00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{F1 sobre escenas compuestas con 7 cartas reales y 8 fondos (las mismas cartas y posiciones en todos).}
+\label{tab:fondo}
+\setlength{\tabcolsep}{2.6pt}
+\begin{tabular}{lcccccccc}
+\toprule
+ & Mad. & Verde & Osc. & Blanco & Text. & Desor. & Ruido & Márm. \\
+\midrule
+A               & 0,99 & 1,00 & 1,00 & 0,99 & 1,00 & 1,00 & 0,99 & 1,00 \\
+B               & 0,98 & 0,99 & 0,99 & \textbf{0,90} & 0,97 & 0,97 & 0,98 & 0,99 \\
+A \emph{propio} & 0,99 & 0,99 & 0,99 & 0,98 & 0,99 & 0,99 & 0,99 & 0,99 \\
+B \emph{propio} & 1,00 & 1,00 & 1,00 & 1,00 & 1,00 & 1,00 & 0,99 & 1,00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La Tabla~\ref{tab:robustez} resume cada familia y la Tabla~\ref{tab:niveles} da los niveles que se citan a
+continuación; la Fig.~\ref{fig:robustez} muestra la serie completa.
+\textbf{Oclusión.} Es la perturbación más dañina. En el sintético, A tolera el 30\% del índice tapado (F1 0,95) y con
+el 50\% cae a 0,52. En datos reales, donde las mesas ya tienen cartas superpuestas, el modelo base pierde desde el
+10\% (0,62), mientras que el ajustado resiste hasta el 20\% (0,89). Esto motivó contar como carta una esquina suelta,
+la memoria del seguimiento y congelar la mesa mientras hay una mano encima.
+\textbf{Iluminación.} En el sintético los modelos son casi inmunes (F1 medio $\geq$ 0,98, porque ese dataset ya
+incluye variaciones de brillo); solo la sobreexposición $\times$2,5 baja A a 0,86. En datos reales, la subexposición
+y el bajo contraste son críticos: con brillo $\times$0,2, B obtiene F1 0 (base y ajustado) y A ajustado 0,58; con
+contraste $\times$0,15, A base cae a 0,24 y el ajustado mantiene 0,67. Las sombras afectan poco, salvo a B base. El ajuste fino mejora
+la robustez de A a la iluminación de 0,69 a 0,88 de F1 medio.
+\textbf{Rotación.} Con IoU $\geq$ 0,5, el F1 de A cae a 0,46 a 45° incluso en el sintético, pero es un efecto de la
+medición: la caja real rotada es la caja alineada que contiene al índice girado, más grande que la predicción. Con
+IoU $\geq$ 0,3, el sintético da F1 $\geq$ 0,96 en todos los ángulos. En datos reales queda una caída genuina: A
+ajustado pasa de 0,96 a 0,84 tanto a 45° como a 90°, y casi no pierde a 180° (0,92). La caída a 90° coincide con que
+todas las fotos propias se grabaron con la cámara en una sola orientación.
+\textbf{Fondo.} Con las escenas compuestas (Tabla~\ref{tab:fondo}), A obtiene F1 $\geq$ 0,99 en los 8 fondos; el
+único que afecta es el blanco para B base (0,90), cuyo detector encuentra solo el 83\% de las esquinas. Con cartas
+separadas, el fondo no es la dificultad: lo son la superposición y la oclusión.
 
 \subsection{Confusiones}
-En el test propio casi no se confunden valores: A base acierta el 66,3\% de las esquinas, se equivoca de valor en el
-1,7\% y \textbf{no encuentra el 32,0\%}; ajustado acierta el 95,6\%, no confunde ninguna y no encuentra el 4,4\%. Las
-confusiones que aparecen son entre formas parecidas (8$\to$6 en A base, 5$\to$3 y 8$\to$Q en B ajustado, que clasifica
-un recorte sin contexto), y el 8 es el valor más difícil de localizar (13 de las 18 esquinas perdidas).
+
+\begin{table}[t]
+\centering
+\caption{Errores por esquina en el test propio (412 esquinas reales).}
+\label{tab:confusiones}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lccccl}
+\toprule
+ & Bien & \begin{tabular}[c]{@{}c@{}}Valor\\ equivocado\end{tabular} & \begin{tabular}[c]{@{}c@{}}No\\ detectada\end{tabular}
+ & \begin{tabular}[c]{@{}c@{}}Falsos\\ positivos\end{tabular} & \begin{tabular}[c]{@{}l@{}}Confusión más\\ frecuente\end{tabular} \\
+\midrule
+A               & 66,3\% & 1,7\% & \textbf{32,0\%} & 5  & 8$\to$6 (5) \\
+B               & 64,1\% & 0,2\% & \textbf{35,7\%} & 1  & A$\to$4 (1) \\
+A \emph{propio} & \textbf{95,6\%} & \textbf{0\%} & 4,4\% & 17 & ninguna \\
+B \emph{propio} & 93,0\% & 2,2\% & 4,9\% & 24 & 5$\to$3 (5) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La Tabla~\ref{tab:confusiones} muestra que en el test propio casi no se confunden valores: el error dominante es no
+encontrar la esquina (32\% en A base). El ajuste fino reduce las esquinas no detectadas al 4,4\% sin introducir
+confusiones, a costa de algunos falsos positivos más (17 en 412). Las confusiones que quedan son entre formas
+parecidas (8$\to$6 en A base; 5$\to$3 y 8$\to$Q en B ajustado, que clasifica un recorte sin contexto). Para A
+ajustado, el 8 es el valor más difícil de localizar: 13 de sus 18 esquinas perdidas.
 
 \subsection{Sistema completo}
 
@@ -258,8 +344,9 @@ resultado, cartas y gestos que se vieron en vivo, sin irregularidades (Fig.~\ref
 \begin{enumerate}
 \item El rendimiento en el dataset sintético (mAP50 0,995) no anticipa el rendimiento real (0,68--0,86): evaluar con
 fotos del escenario de uso es imprescindible.
-\item El ajuste fino con datos reales solo mejora el dominio con el que se hace; 79 cuadros del escenario propio
-llevaron el recall de 0,66 a 0,96, mientras que fotos de otro mazo no aportaron nada.
+\item El ajuste fino con datos reales mejora sobre todo el dominio con el que se hace: 79 cuadros del escenario
+propio llevaron el recall de A de 0,66 a 0,96, mientras que fotos de otro mazo no mejoraron a A y solo mejoraron
+parcialmente a B (F1 de 0,78 a 0,83), a través de su detector.
 \item En el escenario de uso, el detector de un paso (A) superó al de dos etapas (B) en exactitud y latencia: el contexto que ve el detector
 ayuda a distinguir valores parecidos, mientras que la CNN de B clasifica un recorte aislado.
 \item En datos reales el error dominante no es confundir valores sino no encontrar la esquina; la oclusión es la
