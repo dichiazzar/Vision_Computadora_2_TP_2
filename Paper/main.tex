@@ -116,15 +116,14 @@ valor, de los últimos 15 cuadros.
 \textbf{Gestos.} MediaPipe Hands \cite{zhang2020mediapipe} da 21 puntos por mano; la pose se clasifica con cocientes
 de distancias muñeca--punta / muñeca--nudillo, invariantes a la rotación y la escala: \emph{apuntar} (solo el índice
 extendido, sostenido 0,5~s) pide carta y la \emph{palma} abierta (sostenida 1,2~s o desplazada) se planta.
-\textbf{Reglas.} Un motor de estados (reparto, jugador, casa, fin) toma la mano estabilizada como fuente de verdad: la
+\textbf{Reglas.} Un motor de estados (reparto, jugador, casa, fin) toma la mano estabilizada como fuente válida: la
 Casa pide hasta llegar a 17, el As vale 11 si no se pasa de 21, y un cambio se acepta tras 5 cuadros estables (20 si agrega
 cartas que nadie pidió). Mientras hay una mano sobre la mesa no se confirma ningún cambio.
 
 \subsection{Protocolo de evaluación}
-Una detección es correcta si su IoU con una esquina real es $\geq 0{,}5$ y el valor coincide. Se reportan mAP50
+Una detección es correcta si su IoU (Intersect over Union) con una esquina real es $\geq 0{,}5$ y el valor coincide. Se reportan mAP50
 (promedio de los 13 valores), precisión (P), recall (R) y F1 con confianza $\geq 0{,}5$, y la latencia por imagen en
-CPU (AMD Ryzen 7 7840U). Para la robustez se aplican 21 perturbaciones a varios niveles (Fig.~\ref{fig:perturbaciones}) ---diseño adaptado de
-una versión previa del proyecto--- y todas las configuraciones ven exactamente la misma imagen perturbada (semilla
+CPU (AMD Ryzen 7 7840U). Para la robustez se aplican 21 perturbaciones a varios niveles (Fig.~\ref{fig:perturbaciones}) y todas las configuraciones ven exactamente la misma imagen perturbada (semilla
 fija). Al rotar, las cajas reales se transforman junto con la imagen.
 
 \begin{figure*}[t]
