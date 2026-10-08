@@ -364,6 +364,11 @@ la palma, y cada intento una sola vez; la versión anterior no detectaba ninguno
 
 ## Experimentos y resultados
 
+**Nombres de las configuraciones.** **A** y **B** (sin sufijo, o "base") son los pipelines entrenados solo con
+datos sintéticos. **A_ft** y **B_ft** son los ajustados con el dataset público teogopk (pesos `*-finetune-real`), y
+**A_propio** y **B_propio**, los ajustados con nuestro dataset propio (pesos `*-finetune-propio`). En el paper
+aparecen como A *ft*, A *propio*, etc.
+
 ### 1. Datos sintéticos (test de cada dataset)
 
 | Modelo | Métrica | Valor |
@@ -425,7 +430,7 @@ al de teogopk) son la prueba:
 | A base | **15 / 15 / 16** | **0,989** |
 | A_ft | 12 / 14 / 15 | 0,957 |
 
-Con fine-tuning, A pierde las esquinas medio tapadas de `ACES_TAPADOS` y tiene confianzas más bajas con ese mazo.
+A_ft pierde las esquinas medio tapadas de `ACES_TAPADOS` y tiene confianzas más bajas con ese mazo.
 Además olvida un poco el dominio sintético. La conclusión es que **ajustar con fotos reales sirve, pero hay que
 hacerlo con fotos del mazo y la mesa donde se va a usar el sistema**: con 69 fotos de otro mazo, el modelo se
 especializa en ese mazo. Esto motivó el experimento siguiente.
@@ -456,10 +461,10 @@ Resultados en el **test propio** (30 cuadros de una sesión que no se usó para 
 | B_ft: ajustado con teogopk | 0,90 | 0,95 | 0,73 | 0,83 | 134 ms |
 | B_propio: ajustado con fotos propias | 0,94 | 0,92 | 0,93 | 0,93 | 143 ms |
 
-Promedio de las 4 variantes: A_propio 0,93 de mAP50 y 0,91 de F1, contra 0,85 y 0,78 del base. B_propio queda en 0,91
+Promedio de las 4 variantes: A_propio 0,93 de mAP50 y 0,91 de F1, contra 0,85 y 0,78 de A base. B_propio queda en 0,91
 y 0,88.
 
-- **Con fotos del escenario real, el recall pasa de 0,66 a 0,96.** El modelo base casi no se equivoca
+- **Con fotos del escenario real, el recall pasa de 0,66 a 0,96.** A base casi no se equivoca
   (precisión 0,96), pero en mesas con muchas cartas amontonadas pierde un tercio de las esquinas. Con fotos propias
   las encuentra casi todas, sin perder precisión. El ajuste con teogopk, otro mazo, no cambia el recall
   (0,66).
@@ -468,9 +473,9 @@ y 0,88.
   La CNN-13 ya clasificaba bien este mazo (97,9% de exactitud en el valid propio antes de ajustar, 98,7% después).
   La mejora de B viene sobre todo del detector.
 - **Especialización en la orientación:** grabamos todas las fotos propias con el celular en vertical. Con la
-  imagen rotada 90°, A_propio baja a 0,83 de F1, un poco por debajo del base (0,84). Para jugar con la cámara en
+  imagen rotada 90°, A_propio baja a 0,83 de F1, un poco por debajo de A base (0,84). Para jugar con la cámara en
   horizontal tendríamos que sumar una sesión grabada así.
-- **Fuera del escenario no empeora:** con las 4 fotos de prueba del mazo Bicycle Dragon, A_propio empata con el base
+- **Fuera del escenario no empeora:** con las 4 fotos de prueba del mazo Bicycle Dragon, A_propio empata con A base
   (15/16 manos correctas, con confianza 0,5).
 - **Manos (`cartas_ok`):** pasan de 7% a 40% en la imagen original. Siguen bajas porque en estos cuadros hay 8 a 12
   cartas por mesa y basta una esquina mal para fallar la mano. En una mano real de Blackjack (2 a 5 cartas por lado),
@@ -634,14 +639,14 @@ perturbación: `robustez_*_ejemplos.jpg`.
 **Lo que muestran:**
 
 1. **Oclusión: es la perturbación más dañina.** En el sintético, A tolera hasta el 30% del índice tapado (F1 0,95) y
-   cae a 0,52 con el 50%. En las fotos reales el modelo base ya pierde con el 10% (F1 0,62), porque esas mesas ya
-   tienen muchas cartas tapadas. El ajustado con fotos propias aguanta el 10–20% (F1 0,93 / 0,89). Con el 50% o más,
+   cae a 0,52 con el 50%. En las fotos reales A base ya pierde con el 10% (F1 0,62), porque esas mesas ya
+   tienen muchas cartas tapadas. A_propio aguanta el 10–20% (F1 0,93 / 0,89). Con el 50% o más,
    ningún modelo reconoce el índice. Eso motivó, en la aplicación, contar como carta una esquina suelta (la otra puede
    estar tapada), la memoria del seguimiento y congelar la mesa mientras hay una mano encima.
 2. **Iluminación: en datos reales importa mucho más que en los sintéticos.** En el sintético los modelos son casi
    inmunes (F1 ≥ 0,98), porque Roboflow ya aplicó cambios de brillo al exportar ese dataset. En las fotos reales, la
    poca luz (brillo ×0,2) y el contraste muy bajo (×0,15) son lo más difícil:
-   - **B no tolera la poca luz:** con brillo ×0,2, F1 = **0,00** (base y ajustado), mientras que A_propio conserva 0,58.
+   - **B no tolera la poca luz:** con brillo ×0,2, F1 = **0,00** (B base y B_propio), mientras que A_propio conserva 0,58.
    - **Contraste ×0,15:** A base cae a 0,24 y A_propio mantiene 0,67.
    - **Las sombras casi no afectan:** con luz mínima del 10%, A_propio da 0,92.
 
@@ -671,7 +676,7 @@ perturbación: `robustez_*_ejemplos.jpg`.
 
    El único fondo que afecta es el **blanco** (del color de la carta) para **B base**: su detector de una clase
    encuentra solo el 83% de las esquinas. Con cartas separadas, A da ~1,00 sobre cualquier fondo, mientras que en las
-   fotos reales el base daba 0,78. **La dificultad real son las cartas amontonadas y tapadas, no el fondo.**
+   fotos reales A base daba 0,78. **La dificultad real son las cartas amontonadas y tapadas, no el fondo.**
 
    *Limitaciones:* son 7 cartas de 6 valores, y tomamos las cajas reales de sus esquinas de las detecciones de
    A_propio en el cuadro original, verificadas a ojo. Eso puede favorecer levemente a A_propio.
