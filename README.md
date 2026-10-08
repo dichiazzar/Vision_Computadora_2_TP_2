@@ -691,7 +691,9 @@ valor) y separa tres errores: valor equivocado, esquina no encontrada y falso po
 
 - **En fotos reales casi no se confunden valores:** el problema es **no encontrar la esquina**.
 - **El fine-tuning resuelve justamente eso:** las esquinas no detectadas bajan de 32% a 4%.
-- **La carta más difícil es el 8:** se lleva 13 de las 18 esquinas que A_propio no encuentra.
+- **La carta más difícil es el 8:** se lleva 13 de las 18 esquinas que A_propio no encuentra. De los 31 índices de 8
+  del test detecta el 58%, contra el 86% o más en los demás valores (B_propio: 11 de 20; detalle por valor en
+  `confusiones_propio.csv`, filas con `predicho = no detectada`).
 - **Las confusiones que quedan son de formas parecidas:** 8 ↔ 6 ↔ 9 y 5 ↔ 3, y aparecen sobre todo en B, que clasifica
   un recorte chico sin contexto.
 

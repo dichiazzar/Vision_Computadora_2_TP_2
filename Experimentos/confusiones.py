@@ -5,7 +5,8 @@ el valor, conf >= 0.5). Así se separan tres tipos de error:
   - confusión de valor: la esquina se encontró, pero con otro valor (p. ej. un 3 leído como 5);
   - esquina no encontrada (falso negativo de localización);
   - detección que no corresponde a ninguna esquina real (falso positivo).
-Se guarda la matriz de confusión (real x predicho, con la columna "no detectada") y las confusiones más frecuentes.
+Se guarda la matriz de confusión (real x predicho, con la columna "no detectada"), las confusiones más frecuentes y
+las esquinas no detectadas por valor (filas con predicho = "no detectada"; las filas con real = "TOTAL" son los totales).
 
 Uso (desde la carpeta del repo):
     python Experimentos/confusiones.py --dataset propio
@@ -94,6 +95,8 @@ def main():
         matrices[nombre] = m
         for v, g, p in confusiones:
             filas.append(dict(config=nombre, real=g, predicho=p, veces=v))
+        for g, v in no_det_por_valor.most_common():
+            filas.append(dict(config=nombre, real=g, predicho="no detectada", veces=v))
         filas.append(dict(config=nombre, real="TOTAL", predicho="bien", veces=bien))
         filas.append(dict(config=nombre, real="TOTAL", predicho="valor equivocado", veces=valor_mal))
         filas.append(dict(config=nombre, real="TOTAL", predicho="no detectada", veces=no_det))

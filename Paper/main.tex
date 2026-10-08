@@ -61,7 +61,7 @@ los 13 valores. Las contribuciones son:
 \item Una comparación entre un detector de un paso (A) y uno de dos etapas (B), en precisión y latencia, sobre datos
 sintéticos, un dataset real público y un dataset real propio.
 \item La cuantificación de la brecha sintético--real y de cuándo el ajuste fino con fotos reales la cierra.
-\item Un estudio de robustez ante 4 familias de perturbaciones y un análisis de las confusiones entre valores.
+\item Un estudio de robustez ante 5 familias de perturbaciones y un análisis de las confusiones entre valores.
 \item Un sistema completo y reproducible ---cartas, seguimiento, gestos y reglas--- validado con partidas reales.
 \end{itemize}
 
@@ -296,18 +296,20 @@ separadas, el fondo no es la dificultad: lo son la superposición y la oclusión
 
 \begin{table}[t]
 \centering
-\caption{Errores por esquina en el test propio (412 esquinas reales).}
+\caption{Errores por esquina en el test propio (412 esquinas reales). \emph{Peor valor}: el valor con menor
+proporción de esquinas detectadas, entre paréntesis.}
 \label{tab:confusiones}
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{lccccl}
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{lcccccc}
 \toprule
- & Bien & \begin{tabular}[c]{@{}c@{}}Valor\\ equivocado\end{tabular} & \begin{tabular}[c]{@{}c@{}}No\\ detectada\end{tabular}
- & \begin{tabular}[c]{@{}c@{}}Falsos\\ positivos\end{tabular} & \begin{tabular}[c]{@{}l@{}}Confusión más\\ frecuente\end{tabular} \\
+ & Bien & \begin{tabular}[c]{@{}c@{}}Valor\\ equiv.\end{tabular} & \begin{tabular}[c]{@{}c@{}}No\\ detect.\end{tabular}
+ & \begin{tabular}[c]{@{}c@{}}Falsos\\ posit.\end{tabular} & \begin{tabular}[c]{@{}c@{}}Confusión\\ más frec.\end{tabular}
+ & \begin{tabular}[c]{@{}c@{}}Peor\\ valor\end{tabular} \\
 \midrule
-A               & 66,3\% & 1,7\% & \textbf{32,0\%} & 5  & 8$\to$6 (5) \\
-B               & 64,1\% & 0,2\% & \textbf{35,7\%} & 1  & A$\to$4 (1) \\
-A \emph{propio} & \textbf{95,6\%} & \textbf{0\%} & 4,4\% & 17 & ninguna \\
-B \emph{propio} & 93,0\% & 2,2\% & 4,9\% & 24 & 5$\to$3 (5) \\
+A               & 66,3\% & 1,7\% & \textbf{32,0\%} & 5  & 8$\to$6 (5) & 9 (32\%) \\
+B               & 64,1\% & 0,2\% & \textbf{35,7\%} & 1  & A$\to$4 (1) & 5 (27\%) \\
+A \emph{propio} & \textbf{95,6\%} & \textbf{0\%} & 4,4\% & 17 & ninguna & 8 (58\%) \\
+B \emph{propio} & 93,0\% & 2,2\% & 4,9\% & 24 & 5$\to$3 (5) & 8 (65\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -315,8 +317,11 @@ B \emph{propio} & 93,0\% & 2,2\% & 4,9\% & 24 & 5$\to$3 (5) \\
 La Tabla~\ref{tab:confusiones} muestra que en el test propio casi no se confunden valores: el error dominante es no
 encontrar la esquina (32\% en A base). El ajuste fino reduce las esquinas no detectadas al 4,4\% sin introducir
 confusiones, a costa de algunos falsos positivos más (17 en 412). Las confusiones que quedan son entre formas
-parecidas (8$\to$6 en A base; 5$\to$3 y 8$\to$Q en B ajustado, que clasifica un recorte sin contexto). Para A
-ajustado, el 8 es el valor más difícil de localizar: 13 de sus 18 esquinas perdidas.
+parecidas (8$\to$6 en A base; 5$\to$3 y 8$\to$Q en B ajustado, que clasifica un recorte sin contexto). Desglosando
+por valor las esquinas no detectadas (columna \emph{Peor valor}), en los dos modelos ajustados se concentran en el
+8: A ajustado no encuentra 13 de los 31 índices de 8 del test (detecta el 58\%), y esas 13 son la mayoría de sus 18
+esquinas perdidas; en todos los demás valores detecta el 86\% o más. B ajustado muestra el mismo patrón (11 de sus 20
+esquinas perdidas son 8).
 
 \subsection{Sistema completo}
 
